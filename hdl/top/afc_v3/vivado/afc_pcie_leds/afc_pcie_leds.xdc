@@ -168,6 +168,15 @@ set_max_delay -datapath_only -from               [get_clocks clk_125mhz]  -to [g
 set_max_delay -datapath_only -from               [get_clocks -include_generated_clocks pcie_clk] -to [get_clocks -include_generated_clocks clk_pll_i] $clk_125mhz_period_half
 set_max_delay -datapath_only -from               [get_clocks -include_generated_clocks clk_pll_i] -to [get_clocks -include_generated_clocks pcie_clk] $clk_125mhz_period_half
 
+# DDR3 reset path. Copied from
+# ddr_core.xdc and modified accordingly
+set_max_delay -datapath_only -from               [get_pins -hier -filter {NAME =~ *cmp_pcie_cntr/user_lnk_up_int_i/C}] -to [get_cells -hier *rstdiv0_sync_r*] 5
+
+# Constraint the asynchronous reset of the DDR3 module. It should be safe to declare it
+# as a false path, but let's give it a 5 ns, as the constraint above.
+set pcie_user_ddr_reset                          [get_cells -hier -filter {NAME =~ */theTlpControl/Memory_Space/General_Control_i_reg[16]}]
+set_max_delay -from                              [get_cells $pcie_user_ddr_reset] 5.000
+
 #######################################################################
 ##                         Bitstream Settings                        ##
 #######################################################################
