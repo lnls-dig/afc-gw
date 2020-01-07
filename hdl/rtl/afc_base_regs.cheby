@@ -1,0 +1,38 @@
+memory-map:
+  name: afc_base_regs
+  bus: wb-32-be
+  children:
+    - submap:
+        name: metadata
+        description: a ROM containing the carrier metadata
+        size: 0x40
+        interface: sram
+    - block:
+       name: csr
+       description: carrier and fmc status and control
+       address: 0x40
+       children:
+       - reg:
+          name: fmc_presence
+          description: presence lines for the fmcs
+          access: ro
+          width: 32
+       - reg:
+          name: ddr_status
+          description: status of the ddr3 controller
+          access: ro
+          width: 32
+          children:
+           - field:
+               description: Set when calibration is done.
+               name: calib_done
+               range: 0
+       - reg:
+          name: pcb_rev
+          description: pcb revision
+          access: ro
+          width: 32
+          children:
+           - field:
+              name: id
+              range: 3-0
