@@ -6,7 +6,7 @@ set -e
 set -u
 
 # Maximum of 16 chars
-SYNTH_INFO_PROJECT="bpm-gw-sr-sirius"
+SYNTH_INFO_PROJECT="afc-pcie-leds"
 SYNTH_INFO_TOOL="VIVADO"
 SYNTH_INFO_VER=$(vivado -version | head -n 1 | cut -d' ' -f2 | cut -d 'v' -f2)
 
