@@ -221,10 +221,50 @@ end entity afc_base;
 
 architecture top of afc_base is
 
+  constant c_zero_master                     : t_wishbone_master_out := (
+    cyc => '0',
+    stb => '0',
+    adr => (others => '0'),
+    sel => (others => '0'),
+    we  => '0',
+    dat => (others => '0')
+  );
+
+  -----------------------------------------------------------------------------
   -- Top crossbar layout
+  -----------------------------------------------------------------------------
+
+  -----------------------------------------------------------------------------
+  -- Master SDB layout. For future MSI support
+  -----------------------------------------------------------------------------
+
+  -- Number of masters
+  constant c_masters                         : natural := 2;
+  -- Master indexes
+  constant c_ma_pcie_id                      : natural := 0;
+  constant c_ma_rs232_syscon_id              : natural := 1;
+
+  -- Master layout
+  constant c_ma_layout_raw : t_sdb_record_array(c_masters-1 downto 0) :=
+   (
+     c_ma_pcie_id               => f_sdb_auto_msi(c_null_msi,    false),   -- no MSIs for PCIe
+     c_ma_rs232_syscon_id       => f_sdb_auto_msi(c_null_msi,    false)    -- no MSIs for UART
+   );
+
+  constant c_ma_layout                       : t_sdb_record_array := f_sdb_auto_layout(c_ma_layout_raw);
+
+  -- Crossbar master/slave arrays
+  signal cbar_bus_slave_in                   : t_wishbone_slave_in_array  (c_masters-1 downto 0);
+  signal cbar_bus_slave_out                  : t_wishbone_slave_out_array (c_masters-1 downto 0);
+  signal cbar_msi_master_in                  : t_wishbone_master_in_array (c_masters-1 downto 0);
+  signal cbar_msi_master_out                 : t_wishbone_master_out_array(c_masters-1 downto 0);
+
+  -----------------------------------------------------------------------------
+  -- Master SDB layout. For future MSI support
+  -----------------------------------------------------------------------------
+
   -- Number of slaves
   constant c_slaves                          : natural := 5;
-  -- Peripherals
 
   -- Slaves indexes
   constant c_slv_afc_base_id                 : natural := 0;
@@ -238,12 +278,32 @@ architecture top of afc_base is
   constant c_slv_sdb_gen_cores_id            : natural := 7;
   constant c_slv_sdb_infra_cores_id          : natural := 8;
 
-  -- Number of masters
-  constant c_masters                         : natural := 2;  -- PCIe and, possibly, RS232
+  -- General peripherals layout. UART, LEDs (GPIO), Buttons (GPIO) and Tics counter
+  constant c_periph_bridge_sdb : t_sdb_bridge := f_xwb_bridge_manual_sdb(x"00000FFF", x"00000400");
 
-  -- Master indexes
-  constant c_ma_pcie_id                      : natural := 0;
-  constant c_ma_rs232_syscon_id              : natural := 1;
+  -- WB SDB (Self describing bus) layout
+  constant c_slv_layout : t_sdb_record_array(c_slaves+4-1 downto 0) :=
+    (
+     c_slv_afc_base_id         => f_sdb_embed_device(c_xwb_afc_base_regs_sdb,    x"00010000"),   -- AFC base registers control port
+     c_slv_periph_id           => f_sdb_embed_bridge(c_periph_bridge_sdb,        x"00020000"),   -- General peripherals control port
+     c_slv_board_i2c_id        => f_sdb_embed_device(c_xwb_i2c_master_sdb,       x"00030000"),   -- Board I2C
+     c_slv_vic_id              => f_sdb_embed_device(c_xwb_vic_sdb,              x"00040000"),   -- VIC
+     c_slv_spi_id              => f_sdb_embed_device(c_xwb_spi_sdb,              x"00050000"),   -- Flash SPI
+     c_slv_sdb_repo_url_id     => f_sdb_embed_repo_url(c_sdb_repo_url),
+     c_slv_sdb_top_syn_id      => f_sdb_embed_synthesis(c_sdb_top_syn_info),
+     c_slv_sdb_gen_cores_id    => f_sdb_embed_synthesis(c_sdb_general_cores_syn_info),
+     c_slv_sdb_infra_cores_id  => f_sdb_embed_synthesis(c_sdb_infra_cores_syn_info)
+    );
+
+  -- Self Describing Bus ROM Address. It will be an addressed slave as well
+  constant c_layout                          : t_sdb_record_array := c_ma_layout & c_slv_layout;
+  constant c_sdb_address                     : t_wishbone_address := x"00000000";
+
+  -- Crossbar master/slave arrays
+  signal cbar_msi_slave_in                   : t_wishbone_slave_in_array  (c_slaves-1 downto 0) := (others => c_zero_master);
+  signal cbar_msi_slave_out                  : t_wishbone_slave_out_array (c_slaves-1 downto 0);
+  signal cbar_bus_master_in                  : t_wishbone_master_in_array (c_slaves-1 downto 0);
+  signal cbar_bus_master_out                 : t_wishbone_master_out_array(c_slaves-1 downto 0);
 
   -- GPIO num pinscalc
   constant c_leds_num_pins                   : natural := 3;
@@ -262,33 +322,7 @@ architecture top of afc_base is
   constant c_clk_200mhz_id                   : natural := 1;
   constant c_clk_pcie_id                     : natural := 2;
 
-  -- General peripherals layout. UART, LEDs (GPIO), Buttons (GPIO) and Tics counter
-  constant c_periph_bridge_sdb : t_sdb_bridge := f_xwb_bridge_manual_sdb(x"00000FFF", x"00000400");
-
-  -- WB SDB (Self describing bus) layout
-  constant c_layout : t_sdb_record_array(c_slaves+4-1 downto 0) :=
-    (
-     c_slv_afc_base_id         => f_sdb_embed_device(c_xwb_afc_base_regs_sdb,    x"00001000"),   -- AFC base registers control port
-     c_slv_periph_id           => f_sdb_embed_bridge(c_periph_bridge_sdb,        x"00002000"),   -- General peripherals control port
-     c_slv_board_i2c_id        => f_sdb_embed_device(c_xwb_i2c_master_sdb,       x"00003000"),   -- Board I2C
-     c_slv_vic_id              => f_sdb_embed_device(c_xwb_vic_sdb,              x"00004000"),   -- VIC
-     c_slv_spi_id              => f_sdb_embed_device(c_xwb_spi_sdb,              x"00005000"),   -- Flash SPI
-     c_slv_sdb_repo_url_id     => f_sdb_embed_repo_url(c_sdb_repo_url),
-     c_slv_sdb_top_syn_id      => f_sdb_embed_synthesis(c_sdb_top_syn_info),
-     c_slv_sdb_gen_cores_id    => f_sdb_embed_synthesis(c_sdb_general_cores_syn_info),
-     c_slv_sdb_infra_cores_id  => f_sdb_embed_synthesis(c_sdb_infra_cores_syn_info)
-    );
-
-  -- Self Describing Bus ROM Address. It will be an addressed slave as well
-  constant c_sdb_address                     : t_wishbone_address := x"00000000";
-
-  -- Crossbar master/slave arrays
-  signal cbar_slave_in                       : t_wishbone_slave_in_array (c_masters-1 downto 0);
-  signal cbar_slave_out                      : t_wishbone_slave_out_array(c_masters-1 downto 0);
-  signal cbar_master_in                      : t_wishbone_master_in_array(c_slaves-1 downto 0);
-  signal cbar_master_out                     : t_wishbone_master_out_array(c_slaves-1 downto 0);
-
-  -- Metadate
+  -- Metadata
   signal metadata_addr                       : std_logic_vector(5 downto 2);
   signal metadata_data                       : std_logic_vector(31 downto 0);
 
@@ -512,6 +546,8 @@ begin
   -- PCIe Core
   -----------------------------------------------------------------------------
 
+  cbar_msi_master_in(c_ma_pcie_id)           <= cc_dummy_slave_out; -- PCIe does not accept MSI
+
   cmp_xwb_pcie_cntr : xwb_pcie_cntr
   generic map (
     g_ma_interface_mode                       => PIPELINED,
@@ -575,6 +611,8 @@ begin
   -----------------------------------------------------------------------------
   -- RS232 Core
   -----------------------------------------------------------------------------
+  cbar_msi_master_in(c_ma_rs232_syscon_id)   <= cc_dummy_slave_out; -- UART does not accept MSI
+
   gen_with_uart_master : if g_WITH_UART_MASTER generate
 
     cmp_xwb_rs232_syscon : xwb_rs232_syscon
@@ -627,11 +665,15 @@ begin
     clk_sys_i                                => clk_sys,
     rst_n_i                                  => clk_sys_rstn,
     -- Master connections (INTERCON is a slave)
-    slave_i                                  => cbar_slave_in,
-    slave_o                                  => cbar_slave_out,
+    slave_i                                  => cbar_bus_slave_in,
+    slave_o                                  => cbar_bus_slave_out,
+    msi_slave_i                              => cbar_msi_slave_in,
+    msi_slave_o                              => cbar_msi_slave_out,
     -- Slave connections (INTERCON is a master)
-    master_i                                 => cbar_master_in,
-    master_o                                 => cbar_master_out
+    master_i                                 => cbar_bus_master_in,
+    master_o                                 => cbar_bus_master_out
+    msi_master_i                             => cbar_msi_master_in,
+    msi_master_o                             => cbar_msi_master_out,
   );
 
   cmp_afc_base_regs: afc_base_regs
