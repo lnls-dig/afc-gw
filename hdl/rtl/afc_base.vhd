@@ -53,6 +53,8 @@ use work.gencores_pkg.all;
 use work.ifc_wishbone_pkg.all;
 -- Custom common cores
 use work.ifc_common_pkg.all;
+-- Trigger definitions
+use work.trigger_common_pkg.all;
 -- Genrams
 use work.genram_pkg.all;
 -- IP cores constants
@@ -105,8 +107,8 @@ port (
   ---------------------------------------------------------------------------
   -- Trigger pins
   ---------------------------------------------------------------------------
-  trig_dir_o                               : out   std_logic_vector(7 downto 0);
-  trig_b                                   : inout std_logic_vector(7 downto 0);
+  trig_dir_o                               : out   std_logic_vector(c_NUM_TRIG-1 downto 0);
+  trig_b                                   : inout std_logic_vector(c_NUM_TRIG-1 downto 0);
 
   ---------------------------------------------------------------------------
   -- AFC Diagnostics
@@ -215,8 +217,17 @@ port (
   --  Interrupts
   irq_user_i                               : in std_logic_vector(g_NUM_USER_IRQ + 5 downto 6) := (others => '0');
 
-  --  The wishbone bus from the gennum/host to the application
-  --  Addresses 0-0x1fff are not available (used by the carrier).
+  -- Trigger
+  trig_out_o                               : out t_trig_channel_array(c_NUM_TRIG-1 downto 0);
+  trig_in_i                                : in  t_trig_channel_array(c_NUM_TRIG-1 downto 0) := (others => c_trig_channel_dummy);
+
+  trig_dbg_o                               : out std_logic_vector(c_NUM_TRIG-1 downto 0);
+  trig_dbg_data_sync_o                     : out std_logic_vector(c_NUM_TRIG-1 downto 0);
+  trig_dbg_data_degliteched_o              : out std_logic_vector(c_NUM_TRIG-1 downto 0);
+
+  --  The wishbone bus from the pcie/host to the application
+  --  LSB addresses are not available (used by the carrier).
+  --  For the exact used addresses see SDB Description.
   --  This is a pipelined wishbone with byte granularity.
   app_wb_o                                 : out t_wishbone_master_out;
   app_wb_i                                 : in  t_wishbone_master_in
@@ -289,7 +300,7 @@ architecture top of afc_base is
   -----------------------------------------------------------------------------
 
   -- Number of slaves
-  constant c_dev_slaves                      : natural := 5;
+  constant c_dev_slaves                      : natural := 7;
 
   -- Slaves indexes
   constant c_dev_slv_afc_base_id             : natural := 0;
@@ -297,6 +308,8 @@ architecture top of afc_base is
   constant c_dev_slv_board_i2c_id            : natural := 2;
   constant c_dev_slv_vic_id                  : natural := 3;
   constant c_dev_slv_spi_id                  : natural := 4;
+  constant c_dev_slv_afc_diag_id             : natural := 5;
+  constant c_dev_slv_trig_iface_id           : natural := 6;
   -- These are not account in the number of slaves as these are special
   constant c_dev_slv_sdb_repo_url_id         : natural := 7;
   constant c_dev_slv_sdb_top_syn_id          : natural := 8;
@@ -314,6 +327,8 @@ architecture top of afc_base is
      c_dev_slv_board_i2c_id        => f_sdb_auto_device(c_xwb_i2c_master_sdb,       g_WITH_BOARD_I2C),   -- Board I2C
      c_dev_slv_vic_id              => f_sdb_auto_device(c_xwb_vic_sdb,              g_WITH_VIC),         -- VIC
      c_dev_slv_spi_id              => f_sdb_auto_device(c_xwb_spi_sdb,              g_WITH_SPI),         -- Flash SPI
+     c_dev_slv_afc_diag_id         => f_sdb_auto_device(c_xwb_afc_diag_sdb,         g_WITH_DIAG),        -- ADC Diagnostics
+     c_dev_slv_trig_iface_id       => f_sdb_auto_device(c_xwb_trigger_iface_sdb,    g_WITH_TRIGGER),     -- Trigger Interface
      c_dev_slv_sdb_repo_url_id     => f_sdb_embed_repo_url(c_sdb_repo_url),
      c_dev_slv_sdb_top_syn_id      => f_sdb_embed_synthesis(c_sdb_top_syn_info),
      c_dev_slv_sdb_gen_cores_id    => f_sdb_embed_synthesis(c_sdb_general_cores_syn_info),
@@ -448,6 +463,16 @@ architecture top of afc_base is
 
   constant num_interrupts                    : natural := 6 + g_NUM_USER_IRQ;
   signal irqs                                : std_logic_vector(num_interrupts - 1 downto 0);
+
+  -- Trigger
+  signal trig_ref_clk                       : std_logic;
+  signal trig_ref_rstn                      : std_logic;
+
+  signal trig_rcv_intern                    : t_trig_channel_array2d(c_trig_num_mux_interfaces-1 downto 0, c_trig_rcv_intern_num-1 downto 0);
+  signal trig_pulse_transm                  : t_trig_channel_array2d(c_trig_num_mux_interfaces-1 downto 0, c_trig_intern_num-1 downto 0);
+  signal trig_pulse_rcv                     : t_trig_channel_array2d(c_trig_num_mux_interfaces-1 downto 0, c_trig_intern_num-1 downto 0);
+
+  signal trig_dbg                           : std_logic_vector(7 downto 0);
 
 begin
 
@@ -1052,6 +1077,159 @@ begin
   gen_without_spi: if not g_WITH_SPI generate
 
     cbar_dev_bus_master_in(c_dev_slv_spi_id) <= (
+        ack => '1',
+        err => '0',
+        rty => '0',
+        stall => '0',
+        dat => x"00000000");
+
+  end generate;
+
+  -----------------------------------------------------------------------------
+  -- AFC Diagnostics
+  -----------------------------------------------------------------------------
+
+  gen_afc_diag : if g_WITH_DIAG generate
+
+    cmp_xwb_afc_diag : xwb_afc_diag
+    generic map(
+      g_interface_mode                          => PIPELINED,
+      g_address_granularity                     => BYTE
+    )
+    port map(
+      sys_clk_i                                 => clk_sys,
+      sys_rst_n_i                               => clk_sys_rstn,
+
+      -- Fast SPI clock. Same as Wishbone clock.
+      spi_clk_i                                 => clk_sys,
+
+      -----------------------------
+      -- Wishbone Control Interface signals
+      -----------------------------
+      wb_slv_i                                  => cbar_dev_bus_master_out(c_dev_slv_afc_diag_id),
+      wb_slv_o                                  => cbar_dev_bus_master_in(c_dev_slv_afc_diag_id),
+
+      -----------------------------
+      -- SPI interface
+      -----------------------------
+
+      spi_cs                                    => diag_spi_cs_i,
+      spi_si                                    => diag_spi_si_i,
+      spi_so                                    => diag_spi_so_o,
+      spi_clk                                   => diag_spi_clk_i
+    );
+
+  end generate;
+
+  gen_without_afc_diag : if not g_WITH_DIAG generate
+
+    cbar_dev_bus_master_in(c_dev_slv_afc_diag_id) <= (
+        ack => '1',
+        err => '0',
+        rty => '0',
+        stall => '0',
+        dat => x"00000000");
+
+  end generate;
+
+  ----------------------------------------------------------------------
+  --                      Trigger                                     --
+  ----------------------------------------------------------------------
+
+  gen_afc_diag : if g_WITH_TRIGGER generate
+
+    cmp_xwb_afc_diag : xwb_afc_diag
+    generic map(
+      g_interface_mode                          => PIPELINED,
+      g_address_granularity                     => BYTE
+    )
+    port map(
+      sys_clk_i                                 => clk_sys,
+      sys_rst_n_i                               => clk_sys_rstn,
+
+      -- Fast SPI clock. Same as Wishbone clock.
+      spi_clk_i                                 => clk_sys,
+
+      -----------------------------
+      -- Wishbone Control Interface signals
+      -----------------------------
+      wb_slv_i                                  => cbar_dev_bus_master_out(c_dev_slv_afc_diag_id),
+      wb_slv_o                                  => cbar_dev_bus_master_in(c_dev_slv_afc_diag_id),
+
+      -----------------------------
+      -- SPI interface
+      -----------------------------
+
+      spi_cs                                    => diag_spi_cs_i,
+      spi_si                                    => diag_spi_si_i,
+      spi_so                                    => diag_spi_so_o,
+      spi_clk                                   => diag_spi_clk_i
+    );
+
+  end generate;
+
+  gen_without_afc_diag : if not g_WITH_TRIGGER generate
+
+    cbar_dev_bus_master_in(c_dev_slv_afc_diag_id) <= (
+        ack => '1',
+        err => '0',
+        rty => '0',
+        stall => '0',
+        dat => x"00000000");
+
+  end generate;
+
+  -----------------------------------------------------------------------------
+  -- Trigger
+  -----------------------------------------------------------------------------
+
+  trig_ref_clk <= clk_aux;
+  trig_ref_rstn <= clk_aux_rstn;
+
+  gen_with_trigger: if g_WITH_TRIGGER generate
+
+    cmp_wb_trigger_iface : xwb_trigger_iface
+    generic map (
+      g_interface_mode                       => PIPELINED,
+      g_address_granularity                  => BYTE,
+      g_sync_edge                            => g_trig_sync_edge,
+      g_trig_num                             => c_trig_num
+    )
+    port map (
+      clk_i                                  => clk_sys,
+      rst_n_i                                => clk_sys_rstn,
+
+      ref_clk_i                              => trig_ref_clk,
+      ref_rst_n_i                            => trig_ref_rstn,
+
+      -----------------------------
+      -- Wishbone Control Interface signals
+      -----------------------------
+      wb_slv_i                               => cbar_dev_bus_master_out(c_dev_slv_trig_iface_id),
+      wb_slv_o                               => cbar_dev_bus_master_in(c_dev_slv_trig_iface_id),
+
+      -----------------------------
+      -- To/From pads
+      -----------------------------
+      trig_b                                 => trig_b,
+      trig_dir_o                             => trig_dir_o,
+
+      -----------------------------
+      -- User Signals
+      -----------------------------
+      trig_out_o                             => trig_out_o,
+      trig_in_i                              => trig_in_i,
+
+      trig_dbg_o                             => trig_dbg_o,
+      dbg_data_sync_o                        => trig_dbg_data_sync_o,
+      dbg_data_degliteched_o                 => trig_dbg_data_degliteched_o
+    );
+
+  end generate;
+
+  gen_without_trigger : if not g_WITH_TRIGGER generate
+
+    cbar_dev_bus_master_in(c_dev_slv_trig_iface_id) <= (
         ack => '1',
         err => '0',
         rty => '0',
