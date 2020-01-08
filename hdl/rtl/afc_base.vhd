@@ -303,7 +303,7 @@ architecture top of afc_base is
      c_dev_slv_board_i2c_id        => f_sdb_auto_device(c_xwb_i2c_master_sdb,       g_WITH_BOARD_I2C),   -- Board I2C
      c_dev_slv_vic_id              => f_sdb_auto_device(c_xwb_vic_sdb,              g_WITH_VIC),         -- VIC
      c_dev_slv_spi_id              => f_sdb_auto_device(c_xwb_spi_sdb,              g_WITH_SPI),         -- Flash SPI
-     c_dev_slv_afc_diag_id         => f_sdb_auto_device(c_xwb_afc_diag_sdb,         g_WITH_DIAG),        -- ADC Diagnostics
+     c_dev_slv_afc_diag_id         => f_sdb_auto_device(c_xwb_afc_diag_sdb,         g_WITH_DIAG),        -- AFC Diagnostics
      c_dev_slv_trig_iface_id       => f_sdb_auto_device(c_xwb_trigger_iface_sdb,    g_WITH_TRIGGER),     -- Trigger Interface
      c_dev_slv_sdb_repo_url_id     => f_sdb_embed_repo_url(c_sdb_repo_url),
      c_dev_slv_sdb_top_syn_id      => f_sdb_embed_synthesis(c_sdb_top_syn_info),
