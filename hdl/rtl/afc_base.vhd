@@ -67,12 +67,12 @@ use work.afc_base_regs_pkg.all;
 entity afc_base is
 generic (
   --  If true, instantiate a VIC/UART/DIAG/SPI.
-  g_WITH_VIC                               : boolean := True;
-  g_WITH_UART_MASTER                       : boolean := True;
-  g_WITH_DIAG                              : boolean := True;
-  g_WITH_TRIGGER                           : boolean := True;
-  g_WITH_SPI                               : boolean := True;
-  g_WITH_BOARD_I2C                         : boolean := True;
+  g_WITH_VIC                               : boolean := true;
+  g_WITH_UART_MASTER                       : boolean := true;
+  g_WITH_DIAG                              : boolean := true;
+  g_WITH_TRIGGER                           : boolean := true;
+  g_WITH_SPI                               : boolean := true;
+  g_WITH_BOARD_I2C                         : boolean := true;
   --  Number of user interrupts
   g_NUM_USER_IRQ                           : natural := 1
 );
@@ -795,6 +795,10 @@ begin
   -- LED Red, LED Green, LED Blue
   leds_o <= gpio_leds_out_int;
 
+  -----------------------------------------------------------------------------
+  -- Board I2C Core
+  -----------------------------------------------------------------------------
+
   gen_with_board_i2c : if not g_WITH_BOARD_I2C generate
 
     cmp_board_i2c: xwb_i2c_master
@@ -838,6 +842,10 @@ begin
 
   end generate;
 
+  -----------------------------------------------------------------------------
+  -- IRQ Core
+  -----------------------------------------------------------------------------
+
   gen_user_irq: if g_NUM_USER_IRQ > 0 generate
     irqs(irq_user_i'range) <= irq_user_i;
   end generate gen_user_irq;
@@ -848,7 +856,7 @@ begin
     generic map (
       g_address_granularity                  => BYTE,
       g_num_interrupts                       => num_interrupts,
-      g_FIXED_POLARITY                       => True,
+      g_FIXED_POLARITY                       => true,
       g_POLARITY                             => '1'
     )
     port map (
@@ -880,6 +888,10 @@ begin
   irqs(3) <= '0';
   irqs(4) <= '0';
   irqs(5) <= '0';
+
+  -----------------------------------------------------------------------------
+  -- Flash SPI
+  -----------------------------------------------------------------------------
 
   gen_spi: if g_WITH_SPI generate
 
