@@ -283,10 +283,10 @@ architecture top of afc_base is
   constant c_sdb_address                     : t_wishbone_address := x"00000000";
 
   -- Crossbar master/slave arrays
-  signal cbar_slave_i                        : t_wishbone_slave_in_array (c_masters-1 downto 0);
-  signal cbar_slave_o                        : t_wishbone_slave_out_array(c_masters-1 downto 0);
-  signal cbar_master_i                       : t_wishbone_master_in_array(c_slaves-1 downto 0);
-  signal cbar_master_o                       : t_wishbone_master_out_array(c_slaves-1 downto 0);
+  signal cbar_slave_in                       : t_wishbone_slave_in_array (c_masters-1 downto 0);
+  signal cbar_slave_out                      : t_wishbone_slave_out_array(c_masters-1 downto 0);
+  signal cbar_master_in                      : t_wishbone_master_in_array(c_slaves-1 downto 0);
+  signal cbar_master_out                     : t_wishbone_master_out_array(c_slaves-1 downto 0);
 
   -- Metadate
   signal metadata_addr                       : std_logic_vector(5 downto 2);
@@ -554,8 +554,8 @@ begin
     -- Reset wishbone interface with the same reset as the other
     -- modules, including a reset coming from the PCIe itself.
     wb_rst_i                                 => clk_sys_rst,
-    wb_ma_i                                  => cbar_slave_o(c_ma_pcie_id),
-    wb_ma_o                                  => cbar_slave_i(c_ma_pcie_id),
+    wb_ma_i                                  => cbar_slave_out(c_ma_pcie_id),
+    wb_ma_o                                  => cbar_slave_in(c_ma_pcie_id),
     -- Additional exported signals for instantiation
     wb_ma_pcie_rst_o                         => wb_ma_pcie_rst,
     pcie_clk_o                               => clk_pcie,
@@ -595,8 +595,8 @@ begin
       rstn_o                                 => uart_rstn,
 
       -- WISHBONE master
-      wb_master_i                            => cbar_slave_o(c_ma_rs232_syscon_id),
-      wb_master_o                            => cbar_slave_i(c_ma_rs232_syscon_id)
+      wb_master_i                            => cbar_slave_out(c_ma_rs232_syscon_id),
+      wb_master_o                            => cbar_slave_in(c_ma_rs232_syscon_id)
     );
 
   end generate;
@@ -605,7 +605,7 @@ begin
 
     rs232_txd_o <= '0';
     uart_rstn <= '1';
-    cbar_slave_o(c_ma_rs232_syscon_id) <= c_DUMMY_WB_MASTER_IN;
+    cbar_slave_out(c_ma_rs232_syscon_id) <= c_DUMMY_WB_MASTER_IN;
 
   end generate;
 
@@ -627,28 +627,28 @@ begin
     clk_sys_i                                => clk_sys,
     rst_n_i                                  => clk_sys_rstn,
     -- Master connections (INTERCON is a slave)
-    slave_i                                  => cbar_slave_i,
-    slave_o                                  => cbar_slave_o,
+    slave_i                                  => cbar_slave_in,
+    slave_o                                  => cbar_slave_out,
     -- Slave connections (INTERCON is a master)
-    master_i                                 => cbar_master_i,
-    master_o                                 => cbar_master_o
+    master_i                                 => cbar_master_in,
+    master_o                                 => cbar_master_out
   );
 
   cmp_afc_base_regs: afc_base_regs
   port map (
     rst_n_i                                  => clk_sys_rstn,
     clk_i                                    => clk_sys,
-    wb_cyc_i                                 => cbar_slave_i(c_slv_afc_base_id).cyc,
-    wb_stb_i                                 => cbar_slave_i(c_slv_afc_base_id).stb,
-    wb_adr_i                                 => cbar_slave_i(c_slv_afc_base_id).adr(3 downto 2),  -- Bytes address from PCIe
-    wb_sel_i                                 => cbar_slave_i(c_slv_afc_base_id).sel,
-    wb_we_i                                  => cbar_slave_i(c_slv_afc_base_id).we,
-    wb_dat_i                                 => cbar_slave_i(c_slv_afc_base_id).dat,
-    wb_ack_o                                 => cbar_slave_o(c_slv_afc_base_id).ack,
-    wb_err_o                                 => cbar_slave_o(c_slv_afc_base_id).err,
-    wb_rty_o                                 => cbar_slave_o(c_slv_afc_base_id).rty,
-    wb_stall_o                               => cbar_slave_o(c_slv_afc_base_id).stall,
-    wb_dat_o                                 => cbar_slave_o(c_slv_afc_base_id).dat,
+    wb_cyc_i                                 => cbar_slave_in(c_slv_afc_base_id).cyc,
+    wb_stb_i                                 => cbar_slave_in(c_slv_afc_base_id).stb,
+    wb_adr_i                                 => cbar_slave_in(c_slv_afc_base_id).adr(3 downto 2),  -- Bytes address from PCIe
+    wb_sel_i                                 => cbar_slave_in(c_slv_afc_base_id).sel,
+    wb_we_i                                  => cbar_slave_in(c_slv_afc_base_id).we,
+    wb_dat_i                                 => cbar_slave_in(c_slv_afc_base_id).dat,
+    wb_ack_o                                 => cbar_slave_out(c_slv_afc_base_id).ack,
+    wb_err_o                                 => cbar_slave_out(c_slv_afc_base_id).err,
+    wb_rty_o                                 => cbar_slave_out(c_slv_afc_base_id).rty,
+    wb_stall_o                               => cbar_slave_out(c_slv_afc_base_id).stall,
+    wb_dat_o                                 => cbar_slave_out(c_slv_afc_base_id).dat,
 
     -- presence lines for the fmcs
     csr_fmc_presence_i                       => fmc_presence,
@@ -746,8 +746,8 @@ begin
     button_oen_o                             => open,
 
     -- Wishbone
-    slave_i                                  => cbar_master_o(c_slv_periph_id),
-    slave_o                                  => cbar_master_i(c_slv_periph_id)
+    slave_i                                  => cbar_master_out(c_slv_periph_id),
+    slave_o                                  => cbar_master_in(c_slv_periph_id)
   );
 
   -- LED Red, LED Green, LED Blue
@@ -765,8 +765,8 @@ begin
       clk_sys_i                              => clk_sys,
       rst_n_i                                => clk_sys_rstn,
 
-      slave_i                                => cbar_master_o(c_slv_board_i2c_id),
-      slave_o                                => cbar_master_i(c_slv_board_i2c_id),
+      slave_i                                => cbar_master_out(c_slv_board_i2c_id),
+      slave_o                                => cbar_master_in(c_slv_board_i2c_id),
 
       int_o                                  => irqs(0),
 
@@ -785,7 +785,7 @@ begin
 
   gen_without_board_i2c : if not g_WITH_BOARD_I2C generate
 
-    cbar_master_i(c_slv_board_i2c_id) <= (
+    cbar_master_in(c_slv_board_i2c_id) <= (
         ack => '1',
         err => '0',
         rty => '0',
@@ -813,8 +813,8 @@ begin
       clk_sys_i                              => clk_sys,
       rst_n_i                                => clk_sys_rstn,
 
-      slave_i                                => cbar_master_o(c_slv_vic_id),
-      slave_o                                => cbar_master_i(c_slv_vic_id),
+      slave_i                                => cbar_master_out(c_slv_vic_id),
+      slave_o                                => cbar_master_in(c_slv_vic_id),
 
       irqs_i                                 => irqs,
       irq_master_o                           => irq_master
@@ -824,7 +824,7 @@ begin
 
   gen_no_vic: if not g_WITH_VIC generate
 
-    cbar_master_i(c_slv_vic_id) <= (
+    cbar_master_in(c_slv_vic_id) <= (
         ack => '1',
         err => '0',
         rty => '0',
@@ -853,8 +853,8 @@ begin
       clk_sys_i                              => clk_sys,
       rst_n_i                                => clk_sys_rstn,
 
-      slave_i                                => cbar_master_o(c_slv_spi_id),
-      slave_o                                => cbar_master_i(c_slv_spi_id),
+      slave_i                                => cbar_master_out(c_slv_spi_id),
+      slave_o                                => cbar_master_in(c_slv_spi_id),
 
       int_o                                  => irqs(1),
 
@@ -868,7 +868,7 @@ begin
 
   gen_without_spi: if not g_WITH_SPI generate
 
-    cbar_master_i(c_slv_spi_id) <= (
+    cbar_master_in(c_slv_spi_id) <= (
         ack => '1',
         err => '0',
         rty => '0',
