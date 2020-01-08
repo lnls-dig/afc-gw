@@ -23,14 +23,14 @@
 --------------------------------------------------------------------------------
 
 ------------------------------------------------------------------------------
--- Title      : BSP for AFC with PCIe + LEDs
+-- Title      : BSP for AFC
 ------------------------------------------------------------------------------
 -- Author     : Lucas Maziero Russo
 -- Company    : CNPEM LNLS-DIG
 -- Created    : 2020-01-07
 -- Platform   : FPGA-generic
 -------------------------------------------------------------------------------
--- Description: BSP for AFC with PCIe + LEDs
+-- Description: BSP for AFC
 -------------------------------------------------------------------------------
 -- Copyright (c) 2019 CNPEM
 -- Licensed under GNU Lesser General Public License (LGPL) v3.0
