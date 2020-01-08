@@ -180,7 +180,7 @@ port (
   ---------------------------------------------------------------------------
 
   spi_sclk_o                               : out std_logic;
-  spi_cs_n_o                                : out std_logic;
+  spi_cs_n_o                               : out std_logic;
   spi_mosi_o                               : out std_logic;
   spi_miso_i                               : in  std_logic;
 
@@ -223,44 +223,44 @@ architecture top of afc_base is
 
   -- Top crossbar layout
   -- Number of slaves
-  constant c_slaves                        : natural := 5;
+  constant c_slaves                          : natural := 5;
   -- Peripherals
 
   -- Slaves indexes
-  constant c_slv_afc_base_id               : natural := 0;
-  constant c_slv_periph_id                 : natural := 1;
-  constant c_slv_board_i2c_id              : natural := 2;
-  constant c_slv_vic_id                    : natural := 3;
-  constant c_slv_spi_id                    : natural := 4;
+  constant c_slv_afc_base_id                 : natural := 0;
+  constant c_slv_periph_id                   : natural := 1;
+  constant c_slv_board_i2c_id                : natural := 2;
+  constant c_slv_vic_id                      : natural := 3;
+  constant c_slv_spi_id                      : natural := 4;
   -- These are not account in the number of slaves as these are special
-  constant c_slv_sdb_repo_url_id           : natural := 5;
-  constant c_slv_sdb_top_syn_id            : natural := 6;
-  constant c_slv_sdb_gen_cores_id          : natural := 7;
-  constant c_slv_sdb_infra_cores_id        : natural := 8;
+  constant c_slv_sdb_repo_url_id             : natural := 5;
+  constant c_slv_sdb_top_syn_id              : natural := 6;
+  constant c_slv_sdb_gen_cores_id            : natural := 7;
+  constant c_slv_sdb_infra_cores_id          : natural := 8;
 
   -- Number of masters
-  constant c_masters                       : natural := 2;  -- PCIe and, possibly, RS232
+  constant c_masters                         : natural := 2;  -- PCIe and, possibly, RS232
 
   -- Master indexes
-  constant c_ma_pcie_id                    : natural := 0;
-  constant c_ma_rs232_syscon_id            : natural := 1;
+  constant c_ma_pcie_id                      : natural := 0;
+  constant c_ma_rs232_syscon_id              : natural := 1;
 
   -- GPIO num pinscalc
-  constant c_leds_num_pins                  : natural := 3;
-  constant c_with_leds_heartbeat            : t_boolean_array(c_leds_num_pins-1 downto 0) :=
-                                                (2 => false,  -- Red LED
-                                                 1 => false,  -- Green LED
-                                                 0 => false); -- Blue LED
-  constant c_buttons_num_pins               : natural := 8;
+  constant c_leds_num_pins                   : natural := 3;
+  constant c_with_leds_heartbeat             : t_boolean_array(c_leds_num_pins-1 downto 0) :=
+                                                 (2 => false,  -- Red LED
+                                                  1 => false,  -- Green LED
+                                                  0 => false); -- Blue LED
+  constant c_buttons_num_pins                : natural := 8;
 
   -- Number of reset clock cycles (FF)
-  constant c_button_rst_width               : natural := 255;
+  constant c_button_rst_width                : natural := 255;
 
   -- Number of top level clocks
-  constant c_num_tlvl_clks                  : natural := 3; -- CLK_SYS and CLK_200 MHz and PCIE
-  constant c_clk_sys_id                     : natural := 0;
-  constant c_clk_200mhz_id                  : natural := 1;
-  constant c_clk_pcie_id                    : natural := 2;
+  constant c_num_tlvl_clks                   : natural := 3; -- CLK_SYS and CLK_200 MHz and PCIE
+  constant c_clk_sys_id                      : natural := 0;
+  constant c_clk_200mhz_id                   : natural := 1;
+  constant c_clk_pcie_id                     : natural := 2;
 
   -- General peripherals layout. UART, LEDs (GPIO), Buttons (GPIO) and Tics counter
   constant c_periph_bridge_sdb : t_sdb_bridge := f_xwb_bridge_manual_sdb(x"00000FFF", x"00000400");
@@ -280,7 +280,7 @@ architecture top of afc_base is
     );
 
   -- Self Describing Bus ROM Address. It will be an addressed slave as well
-  constant c_sdb_address                    : t_wishbone_address := x"00000000";
+  constant c_sdb_address                     : t_wishbone_address := x"00000000";
 
   -- Crossbar master/slave arrays
   signal cbar_slave_i                        : t_wishbone_slave_in_array (c_masters-1 downto 0);
