@@ -386,8 +386,8 @@ architecture top of afc_base is
   constant c_clk_pcie_id                     : natural := 2;
 
   -- Number of auxiliary clocks
-  constant c_num_aux_clks                   : natural := 1; -- CLK_AUX
-  constant c_clk_aux_id                     : natural := 0;
+  constant c_num_aux_clks                    : natural := 1; -- CLK_AUX
+  constant c_clk_aux_id                      : natural := 0;
 
   -- Trigger constants
   constant c_TRIG_SYNC_EDGE                  : string := "positive";
