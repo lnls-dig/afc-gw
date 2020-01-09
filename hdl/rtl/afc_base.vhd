@@ -389,6 +389,9 @@ architecture top of afc_base is
   constant c_num_aux_clks                   : natural := 1; -- CLK_AUX
   constant c_clk_aux_id                     : natural := 0;
 
+  -- Trigger constants
+  constant c_TRIG_SYNC_EDGE                  : string := "positive";
+
   -- Metadata
   signal metadata_addr                       : std_logic_vector(5 downto 2);
   signal metadata_data                       : std_logic_vector(31 downto 0);
@@ -1164,8 +1167,8 @@ begin
     generic map (
       g_interface_mode                       => PIPELINED,
       g_address_granularity                  => BYTE,
-      g_sync_edge                            => g_trig_sync_edge,
-      g_trig_num                             => c_trig_num
+      g_sync_edge                            => c_TRIG_SYNC_EDGE,
+      g_trig_num                             => c_NUM_TRIG
     )
     port map (
       clk_i                                  => clk_sys,
