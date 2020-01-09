@@ -617,7 +617,7 @@ begin
   -- PCIe Core
   -----------------------------------------------------------------------------
 
-  cbar_top_msi_master_in(c_top_ma_pcie_id)           <= cc_dummy_slave_out; -- PCIe does not accept MSI
+  cbar_top_msi_master_in(c_top_ma_pcie_id)           <= cc_DUMMY_MASTER_IN; -- PCIe does not accept MSI
 
   cmp_xwb_pcie_cntr : xwb_pcie_cntr
   generic map (
@@ -682,7 +682,7 @@ begin
   -----------------------------------------------------------------------------
   -- RS232 Core
   -----------------------------------------------------------------------------
-  cbar_top_msi_master_in(c_top_ma_rs232_syscon_id)   <= cc_dummy_slave_out; -- UART does not accept MSI
+  cbar_top_msi_master_in(c_top_ma_rs232_syscon_id)   <= cc_DUMMY_MASTER_IN; -- UART does not accept MSI
 
   gen_with_uart_master : if g_WITH_UART_MASTER generate
 
@@ -961,12 +961,7 @@ begin
 
   gen_without_board_i2c : if not g_WITH_BOARD_I2C generate
 
-    cbar_dev_bus_master_in(c_dev_slv_board_i2c_id) <= (
-        ack => '1',
-        err => '0',
-        rty => '0',
-        stall => '0',
-        dat => x"00000000");
+    cbar_dev_bus_master_in(c_dev_slv_board_i2c_id) <= c_DUMMY_WB_MASTER_IN;
     board_i2c_scl_b <= 'Z';
     board_i2c_sda_b <= 'Z';
 
@@ -1004,13 +999,7 @@ begin
 
   gen_no_vic: if not g_WITH_VIC generate
 
-    cbar_dev_bus_master_in(c_dev_slv_vic_id) <= (
-        ack => '1',
-        err => '0',
-        rty => '0',
-        stall => '0',
-        dat => x"00000000");
-    irq_master <= '0';
+    cbar_dev_bus_master_in(c_dev_slv_vic_id) <= c_DUMMY_WB_MASTER_IN;
 
   end generate;
 
@@ -1052,12 +1041,7 @@ begin
 
   gen_without_spi: if not g_WITH_SPI generate
 
-    cbar_dev_bus_master_in(c_dev_slv_spi_id) <= (
-        ack => '1',
-        err => '0',
-        rty => '0',
-        stall => '0',
-        dat => x"00000000");
+    cbar_dev_bus_master_in(c_dev_slv_spi_id) <= c_DUMMY_WB_MASTER_IN;
 
   end generate;
 
@@ -1099,12 +1083,7 @@ begin
 
   gen_without_afc_diag : if not g_WITH_DIAG generate
 
-    cbar_dev_bus_master_in(c_dev_slv_afc_diag_id) <= (
-        ack => '1',
-        err => '0',
-        rty => '0',
-        stall => '0',
-        dat => x"00000000");
+    cbar_dev_bus_master_in(c_dev_slv_afc_diag_id) <= c_DUMMY_WB_MASTER_IN;
 
   end generate;
 
@@ -1146,12 +1125,7 @@ begin
 
   gen_without_afc_diag : if not g_WITH_TRIGGER generate
 
-    cbar_dev_bus_master_in(c_dev_slv_afc_diag_id) <= (
-        ack => '1',
-        err => '0',
-        rty => '0',
-        stall => '0',
-        dat => x"00000000");
+    cbar_dev_bus_master_in(c_dev_slv_afc_diag_id) <= c_DUMMY_WB_MASTER_IN;
 
   end generate;
 
@@ -1205,12 +1179,7 @@ begin
 
   gen_without_trigger : if not g_WITH_TRIGGER generate
 
-    cbar_dev_bus_master_in(c_dev_slv_trig_iface_id) <= (
-        ack => '1',
-        err => '0',
-        rty => '0',
-        stall => '0',
-        dat => x"00000000");
+    cbar_dev_bus_master_in(c_dev_slv_trig_iface_id) <= c_DUMMY_WB_MASTER_IN;
 
   end generate;
 
