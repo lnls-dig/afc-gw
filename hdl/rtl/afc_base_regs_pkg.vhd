@@ -29,10 +29,6 @@ package afc_base_regs_pkg is
     metadata_data_o      : out   std_logic_vector(31 downto 0);
     metadata_wr_o        : out   std_logic;
 
-    -- global and application resets
-    csr_resets_global_o  : out   std_logic;
-    csr_resets_appl_o    : out   std_logic;
-
     -- presence lines for the fmcs
     csr_fmc_presence_i   : in    std_logic_vector(31 downto 0);
 
