@@ -884,6 +884,11 @@ begin
     wb_stall_o                               => cbar_dev_bus_master_in(c_dev_slv_afc_base_id).stall,
     wb_dat_o                                 => cbar_dev_bus_master_in(c_dev_slv_afc_base_id).dat,
 
+    -- a ROM containing the carrier metadata
+    metadata_addr_o                          => metadata_addr,
+    metadata_data_i                          => metadata_data,
+    metadata_data_o                          => open,
+
     -- presence lines for the fmcs
     csr_fmc_presence_i                       => fmc_presence,
 
