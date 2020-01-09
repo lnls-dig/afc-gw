@@ -338,7 +338,7 @@ architecture top of afc_base is
   constant c_top_app_id                      : natural := 1; -- Application bus
 
   -- This could be extracted from the total SDB ROM SIZE
-  constant c_top_sdb_offset                  : t_wishbone_address := x"000100000";
+  constant c_top_sdb_offset                  : t_wishbone_address := x"00010000";
   constant c_wishbone_addr_max_size          : t_wishbone_address := (others => '1');
   -- Application bridge occupies everything after the BSP
   constant c_app_bridge_size                 : t_wishbone_address :=
