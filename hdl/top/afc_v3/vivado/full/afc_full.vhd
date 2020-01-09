@@ -129,6 +129,33 @@ architecture top of afc_full is
 
   constant c_NUM_USER_IRQ                  : natural := 1;
 
+  -----------------------------------------------------------------------------
+  -- Crossbar SDB layout.
+  -----------------------------------------------------------------------------
+
+  -- Number of slaves
+  constant c_slaves                        : natural := 1;
+  -- Number of masters
+  constant c_masters                       : natural := 1;            -- Top master.
+
+  constant c_layout_raw : t_sdb_record_array(c_slaves-1 downto 0) :=
+  (
+    0 => f_sdb_auto_device(c_DUMMY_SDB_DEVICE,             true),      -- Test interface
+  );
+
+  constant c_layout                        : t_sdb_record_array := f_sdb_auto_layout(c_layout_raw);
+  -- Self Describing Bus ROM Address. It will be an addressed slave as well.
+  constant c_sdb_address                   : t_wishbone_address := f_sdb_auto_sdb   (c_layout_raw);
+
+  signal cbar_slave_in                     : t_wishbone_slave_in_array (c_masters-1 downto 0);
+  signal cbar_slave_out                    : t_wishbone_slave_out_array(c_masters-1 downto 0);
+  signal cbar_master_in                    : t_wishbone_master_in_array(c_slaves-1 downto 0) := (others => c_DUMMY_WB_MASTER_IN);
+  signal cbar_master_out                   : t_wishbone_master_out_array(c_slaves-1 downto 0);
+
+  -----------------------------------------------------------------------------
+  -- Signals
+  -----------------------------------------------------------------------------
+
   signal clk_sys                           : std_logic;
   signal clk_sys_rstn                      : std_logic;
   signal clk_aux                           : std_logic;
@@ -315,5 +342,31 @@ begin
     );
 
   pcb_rev_id <= (others => '0');
+
+  cmp_interconnect_dev : xwb_sdb_crossbar
+  generic map(
+    g_num_masters                              => c_masters,
+    g_num_slaves                               => c_slaves,
+    g_registered                               => true,
+    g_wraparound                               => true, -- Should be true for nested buses
+    g_layout                                   => c_layout,
+    g_sdb_addr                                 => c_sdb_address
+  )
+  port map(
+    clk_sys_i                                  => clk_sys,
+    rst_n_i                                    => rst_sys_n,
+    -- Master connections (INTERCON is a slave)
+    slave_i                                    => cbar_slave_in,
+    slave_o                                    => cbar_slave_out,
+    -- Slave connections (INTERCON is a master)
+    master_i                                   => cbar_master_in,
+    master_o                                   => cbar_master_out
+  );
+
+  cbar_slave_in(0) <= app_wb_out;
+  app_wb_in <= cbar_slave_out(0);
+
+  -- Unused
+  cbar_master_in(0) <= c_DUMMY_WB_MASTER_IN;
 
 end architecture top;
