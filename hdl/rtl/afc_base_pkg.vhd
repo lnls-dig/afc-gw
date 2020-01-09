@@ -2,7 +2,12 @@ library ieee;
 use ieee.std_logic_1164.all;
 
 library work;
+-- Wishbone definitions
 use work.wishbone_pkg.all;
+-- IP cores constants
+use work.ipcores_pkg.all;
+-- Trigger Common Modules
+use work.trigger_common_pkg.all;
 
 package afc_base_pkg is
 
@@ -16,7 +21,7 @@ package afc_base_pkg is
   --------------------------------------------------------------------
 
   -- AFC MGMT
-  constant c_dummy_sdb_bridge : t_sdb_record := ((511 downto 8 => '0'), (7 downto 0 => x"02"));
+  constant c_dummy_sdb_bridge : t_sdb_record := (511 downto 8 => '0') & x"02";
 
   --------------------------------------------------------------------
   -- Components
@@ -35,7 +40,7 @@ package afc_base_pkg is
     -- Bridge SDB record of the application meta-data. If false, no address is
    -- going to be reserved for the application side.
     g_WITH_APP_SDB_BRIDGE                    : boolean := true;
-    g_APP_SDB_BRIDGE_ADDR                    : std_logic_vector(31 downto 0) := x"0000_0000";
+    g_APP_SDB_BRIDGE_ADDR                    : std_logic_vector(31 downto 0) := x"0000_0000"
   );
   port (
     ---------------------------------------------------------------------------
@@ -189,4 +194,4 @@ package afc_base_pkg is
   );
   end component;
 
-end afc_base_regs_pkg;
+end afc_base_pkg;

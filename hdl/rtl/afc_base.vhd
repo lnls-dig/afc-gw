@@ -56,7 +56,7 @@ generic (
   -- Bridge SDB record of the application meta-data. If false, no address is
  -- going to be reserved for the application side.
   g_WITH_APP_SDB_BRIDGE                    : boolean := true;
-  g_APP_SDB_BRIDGE_ADDR                    : std_logic_vector(31 downto 0) := x"0000_0000";
+  g_APP_SDB_BRIDGE_ADDR                    : std_logic_vector(31 downto 0) := x"0000_0000"
 );
 port (
   ---------------------------------------------------------------------------
@@ -336,7 +336,7 @@ architecture top of afc_base is
   constant c_top_app_id                      : natural := 1; -- Application bus
 
   -- This could be extracted from the total SDB ROM SIZE
-  constant c_top_sdb_offset                  : t_wishbone_address := x"000100000"
+  constant c_top_sdb_offset                  : t_wishbone_address := x"000100000";
   constant c_wishbone_addr_max_size          : t_wishbone_address := (others => '1');
   -- Application bridge occupies everything after the BSP
   constant c_app_bridge_size                 : t_wishbone_address :=
@@ -348,7 +348,7 @@ architecture top of afc_base is
     (
     -- We want this to be fixed at c_top_sdb_offset. So SDB ROM can be at address 0x0
      c_top_dev_id                  => f_sdb_embed_bridge(c_dev_bridge_sdb,          c_top_sdb_offset),
-     c_top_app_id                  => f_sdb_auto_bridge(c_app_bridge_sdb,           g_WITH_APP_SDB_BRIDGE), -- Application bridge
+     c_top_app_id                  => f_sdb_auto_bridge(c_app_bridge_sdb,           g_WITH_APP_SDB_BRIDGE) -- Application bridge
     );
 
   -- Self Describing Bus ROM Address. It will be an addressed slave as well
@@ -741,9 +741,9 @@ begin
     msi_slave_o                              => cbar_top_msi_slave_out,
     -- Slave connections (INTERCON is a master)
     master_i                                 => cbar_top_bus_master_in,
-    master_o                                 => cbar_top_bus_master_out
+    master_o                                 => cbar_top_bus_master_out,
     msi_master_i                             => cbar_top_msi_master_in,
-    msi_master_o                             => cbar_top_msi_master_out,
+    msi_master_o                             => cbar_top_msi_master_out
   );
 
   -- Application WB connections
@@ -773,9 +773,9 @@ begin
     msi_slave_o                              => cbar_dev_msi_slave_out,
     -- Slave connections (INTERCON is a master)
     master_i                                 => cbar_dev_bus_master_in,
-    master_o                                 => cbar_dev_bus_master_out
+    master_o                                 => cbar_dev_bus_master_out,
     msi_master_i                             => cbar_dev_msi_master_in,
-    msi_master_o                             => cbar_dev_msi_master_out,
+    msi_master_o                             => cbar_dev_msi_master_out
   );
 
   -----------------------------------------------------------------------------
@@ -826,8 +826,7 @@ begin
     csr_fmc_presence_i                       => fmc_presence,
 
     csr_ddr_status_calib_done_i              => ddr_rdy,
-    csr_pcb_rev_id_i                         => pcb_rev_id_i,
-
+    csr_pcb_rev_id_i                         => pcb_rev_id_i
   );
 
   fmc_presence (0) <= not fmc0_prsnt_m2c_n;

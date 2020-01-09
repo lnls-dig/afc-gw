@@ -105,7 +105,7 @@ port (
   ---------------------------------------------------------------------------
   -- User LEDs
   ---------------------------------------------------------------------------
-  leds_o                                   : out std_logic_vector(2 downto 0)
+  leds_o                                   : out std_logic_vector(2 downto 0);
 
   ---------------------------------------------------------------------------
   -- FMC interface
@@ -140,7 +140,7 @@ architecture top of afc_full is
 
   constant c_layout_raw : t_sdb_record_array(c_slaves-1 downto 0) :=
   (
-    0 => f_sdb_auto_device(c_DUMMY_SDB_DEVICE,             true),      -- Test interface
+    0 => f_sdb_auto_device(c_DUMMY_SDB_DEVICE,             true)      -- Test interface
   );
 
   constant c_layout                        : t_sdb_record_array := f_sdb_auto_layout(c_layout_raw);
@@ -280,7 +280,7 @@ begin
       ---------------------------------------------------------------------------
       -- User LEDs
       ---------------------------------------------------------------------------
-      leds_o                                   : out std_logic_vector(2 downto 0)
+      leds_o                                   => leds_o,
 
       ---------------------------------------------------------------------------
       -- FMC interface
