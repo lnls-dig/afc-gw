@@ -1048,6 +1048,7 @@ begin
 
     cmp_vic: xwb_vic
     generic map (
+      g_interface_mode                       => PIPELINED,
       g_address_granularity                  => BYTE,
       g_num_interrupts                       => num_interrupts
     )
