@@ -465,8 +465,52 @@ architecture top of afc_base is
   signal trig_ref_rstn                      : std_logic;
 
   ---------------------------
+  --      Components       --
+  ---------------------------
 
-  signal trig_dbg                           : std_logic_vector(7 downto 0);
+  -- Clock generation
+  component clk_gen is
+  port(
+    sys_clk_p_i                             : in std_logic;
+    sys_clk_n_i                             : in std_logic;
+    sys_clk_o                               : out std_logic;
+    sys_clk_bufg_o                          : out std_logic
+  );
+  end component;
+
+  component clk_gen_mgt is
+  port(
+    sys_clk_p_i                             : in std_logic;
+    sys_clk_n_i                             : in std_logic;
+    sys_clk_o                               : out std_logic;
+    sys_clk_bufg_o                          : out std_logic
+  );
+  end component;
+
+  -- Xilinx PLL
+  component sys_pll is
+  generic(
+    -- 200 MHz input clock
+    g_clkin_period                          : real := 5.000;
+    g_divclk_divide                         : integer := 1;
+    g_clkbout_mult_f                        : integer := 5;
+
+    -- 100 MHz output clock
+    g_clk0_divide_f                         : integer := 10;
+    -- 200 MHz output clock
+    g_clk1_divide                           : integer := 5;
+    -- 200 MHz output clock
+    g_clk2_divide                           : integer := 5
+  );
+  port(
+    rst_i                                   : in std_logic := '0';
+    clk_i                                   : in std_logic := '0';
+    clk0_o                                  : out std_logic;
+    clk1_o                                  : out std_logic;
+    clk2_o                                  : out std_logic;
+    locked_o                                : out std_logic
+  );
+  end component;
 
 begin
 
@@ -474,7 +518,7 @@ begin
   -- Main clock generation
   -----------------------------------------------------------------------------
 
-  cmp_clk_gen : entity work.clk_gen
+  cmp_clk_gen : clk_gen
   port map (
     sys_clk_p_i                              => sys_clk_p_i,
     sys_clk_n_i                              => sys_clk_n_i,
@@ -483,7 +527,7 @@ begin
   );
 
    -- Obtain core locking and generate necessary clocks
-  cmp_sys_pll_inst : entity work.sys_pll
+  cmp_sys_pll_inst : sys_pll
   generic map (
     -- 125 MHz input clock
     g_clkin_period                           => 8.000,
@@ -579,7 +623,7 @@ begin
   -- Auxiliary clock generation
   -----------------------------------------------------------------------------
 
-  cmp_aux_clk_gen : entity work.clk_gen_mgt
+  cmp_aux_clk_gen : clk_gen_mgt
   port map (
     sys_clk_p_i                              => aux_clk_p_i,
     sys_clk_n_i                              => aux_clk_n_i,
@@ -588,7 +632,7 @@ begin
   );
 
    -- Auxiliary clock
-  cmp_aux_sys_pll_inst : entity work.sys_pll
+  cmp_aux_sys_pll_inst : sys_pll
   generic map (
     -- RF*5/36 ~ 69.44 MHz input clock ~ 14.4 ns
     g_clkin_period                           => 14.400,
