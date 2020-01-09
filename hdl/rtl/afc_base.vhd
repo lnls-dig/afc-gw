@@ -1073,7 +1073,7 @@ begin
   -- Flash SPI
   -----------------------------------------------------------------------------
 
-  gen_spi: if g_WITH_SPI generate
+  gen_with_spi: if g_WITH_SPI generate
 
     cmp_spi: entity work.xwb_spi
     generic map (
