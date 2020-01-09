@@ -41,6 +41,8 @@ use work.synthesis_descriptor_pkg.all;
 use work.pcie_cntr_axi_pkg.all;
 -- AFC regs package
 use work.afc_base_regs_pkg.all;
+-- AFC regs package
+use work.afc_base_pkg.all;
 
 entity afc_base is
 generic (
