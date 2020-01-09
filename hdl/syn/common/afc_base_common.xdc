@@ -109,6 +109,22 @@ set_property PACKAGE_PIN J8 [get_ports diag_spi_clk_i]
 set_property IOSTANDARD LVCMOS25 [get_ports diag_spi_clk_i]
 
 #######################################################################
+##                      SPI Flash Constraints                        ##
+#######################################################################
+#
+# set_property PACKAGE_PIN J9 [get_ports spi_cs_n_o]
+# set_property IOSTANDARD LVCMOS25 [get_ports spi_cs_n_o]
+#
+# set_property PACKAGE_PIN V28 [get_ports spi_miso_i]
+# set_property IOSTANDARD LVCMOS25 [get_ports spi_miso_i]
+#
+# set_property PACKAGE_PIN V29 [get_ports spi_mosi_o]
+# set_property IOSTANDARD LVCMOS25 [get_ports spi_mosi_o]
+#
+# set_property PACKAGE_PIN J8 [get_ports spi_sclk_o]
+# set_property IOSTANDARD LVCMOS25 [get_ports spi_sclk_o]
+#
+#######################################################################
 ##                      ADN4604ASVZ Contraints                      ##
 #######################################################################
 
