@@ -1046,9 +1046,7 @@ begin
     cmp_vic: xwb_vic
     generic map (
       g_address_granularity                  => BYTE,
-      g_num_interrupts                       => num_interrupts,
-      g_FIXED_POLARITY                       => true,
-      g_POLARITY                             => '1'
+      g_num_interrupts                       => num_interrupts
     )
     port map (
       clk_sys_i                              => clk_sys,
