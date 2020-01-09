@@ -202,7 +202,7 @@ begin
       -- Bridge SDB record of the application meta-data. If false, no address is
       -- going to be reserved for the application side.
       g_WITH_APP_SDB_BRIDGE                    => true,
-      g_APP_SDB_BRIDGE_ADDR                    => x"0000_0000"
+      g_APP_SDB_BRIDGE_ADDR                    => c_sdb_address
     )
     port map (
       ---------------------------------------------------------------------------
