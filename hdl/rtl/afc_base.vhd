@@ -774,7 +774,7 @@ begin
 
   gen_without_uart_master : if not g_WITH_UART_MASTER generate
 
-    rs232_txd_o <= '0';
+    uart_txd_o <= '0';
     uart_rstn <= '1';
     cbar_top_bus_slave_in(c_top_ma_rs232_syscon_id) <= c_DUMMY_WB_SLAVE_IN;
 
