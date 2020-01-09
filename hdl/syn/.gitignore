@@ -93,3 +93,6 @@ planAhead_run_*/
 *files.tcl
 
 **/synthesis_descriptor_pkg.vhd
+
+# Generated XDC file
+**/afc_base_common_gen.xdc
