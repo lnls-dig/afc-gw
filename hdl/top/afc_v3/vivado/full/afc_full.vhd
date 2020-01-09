@@ -313,16 +313,16 @@ begin
 
       --  Clocks and reset.
       clk_sys_o                                => clk_sys,
-      rst_sys_n_o                              => rst_sys_n,
+      rst_sys_n_o                              => clk_sys_rstn,
 
       clk_aux_o                                => clk_aux,
-      rst_aux_n_o                              => rst_aux_n,
+      rst_aux_n_o                              => clk_aux_rstn,
 
       clk_200mhz_o                             => clk_200mhz,
-      rst_200mhz_n_o                           => rst_200mhz_n,
+      rst_200mhz_n_o                           => clk_200mhz_rstn,
 
       clk_pcie_o                               => clk_pcie,
-      rst_pcie_n_o                             => rst_pcie_n,
+      rst_pcie_n_o                             => clk_pcie_rstn,
 
       --  Interrupts
       irq_user_i                               => irq_user,
@@ -356,7 +356,7 @@ begin
   )
   port map(
     clk_sys_i                                  => clk_sys,
-    rst_n_i                                    => rst_sys_n,
+    rst_n_i                                    => clk_sys_rstn,
     -- Master connections (INTERCON is a slave)
     slave_i                                    => cbar_slave_in,
     slave_o                                    => cbar_slave_out,
