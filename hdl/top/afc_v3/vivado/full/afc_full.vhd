@@ -121,14 +121,7 @@ port (
   spi_sclk_o                               : out std_logic;
   spi_cs_n_o                               : out std_logic;
   spi_mosi_o                               : out std_logic;
-  spi_miso_i                               : in  std_logic := '0';
-
-  ---------------------------------------------------------------------------
-  -- Miscellanous AFC pins
-  ---------------------------------------------------------------------------
-
-  -- PCB version
-  pcb_rev_id_i                             : in std_logic_vector(3 downto 0)
+  spi_miso_i                               : in  std_logic := '0'
 );
 end entity afc_full;
 
@@ -144,6 +137,8 @@ architecture top of afc_full is
   signal clk_200mhz_rstn                   : std_logic;
   signal clk_pcie                          : std_logic;
   signal clk_pcie_rstn                     : std_logic;
+
+  signal pcb_rev_id                        : std_logic_vector(3 downto 0);
 
   signal irq_user                          : std_logic_vector(c_NUM_USER_IRQ + 5 downto 6) := (others => '0');
 
@@ -281,7 +276,7 @@ begin
       ---------------------------------------------------------------------------
 
       -- PCB version
-      pcb_rev_id_i                             => pcb_rev_id_i,
+      pcb_rev_id_i                             => pcb_rev_id,
 
       ---------------------------------------------------------------------------
       --  User part
@@ -318,5 +313,7 @@ begin
       app_wb_o                                 => app_wb_out,
       app_wb_i                                 => app_wb_in
     );
+
+  pcb_rev_id <= (others => '0');
 
 end architecture top;
