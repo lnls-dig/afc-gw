@@ -6,6 +6,45 @@ use work.wishbone_pkg.all;
 
 package afc_base_regs_pkg is
 
+  -- Components
+  component afc_base_regs
+  port (
+    rst_n_i              : in    std_logic;
+    clk_i                : in    std_logic;
+    wb_cyc_i             : in    std_logic;
+    wb_stb_i             : in    std_logic;
+    wb_adr_i             : in    std_logic_vector(6 downto 2);
+    wb_sel_i             : in    std_logic_vector(3 downto 0);
+    wb_we_i              : in    std_logic;
+    wb_dat_i             : in    std_logic_vector(31 downto 0);
+    wb_ack_o             : out   std_logic;
+    wb_err_o             : out   std_logic;
+    wb_rty_o             : out   std_logic;
+    wb_stall_o           : out   std_logic;
+    wb_dat_o             : out   std_logic_vector(31 downto 0);
+
+    -- SRAM bus metadata
+    metadata_addr_o      : out   std_logic_vector(5 downto 2);
+    metadata_data_i      : in    std_logic_vector(31 downto 0);
+    metadata_data_o      : out   std_logic_vector(31 downto 0);
+    metadata_wr_o        : out   std_logic;
+
+    -- global and application resets
+    csr_resets_global_o  : out   std_logic;
+    csr_resets_appl_o    : out   std_logic;
+
+    -- presence lines for the fmcs
+    csr_fmc_presence_i   : in    std_logic_vector(31 downto 0);
+
+    -- status of the ddr3 controller
+    -- Set when calibration is done.
+    csr_ddr_status_calib_done_i : in    std_logic;
+
+    -- pcb revision
+    csr_pcb_rev_id_i     : in    std_logic_vector(3 downto 0)
+  );
+  end component;
+
   --------------------------------------------------------------------
   -- SDB Devices Structures
   --------------------------------------------------------------------

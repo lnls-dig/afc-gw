@@ -1,4 +1,4 @@
--- Do not edit.  Generated on Tue Jan 07 14:49:28 2020 by lerwys
+-- Do not edit.  Generated on Thu Jan 09 11:41:05 2020 by lerwys
 -- With Cheby 1.4.dev0 and these options:
 --  --gen-hdl afc_base_regs.vhd -i afc_base_regs.cheby
 
@@ -29,10 +29,6 @@ entity afc_base_regs is
     metadata_data_o      : out   std_logic_vector(31 downto 0);
     metadata_wr_o        : out   std_logic;
 
-    -- global and application resets
-    csr_resets_global_o  : out   std_logic;
-    csr_resets_appl_o    : out   std_logic;
-
     -- presence lines for the fmcs
     csr_fmc_presence_i   : in    std_logic_vector(31 downto 0);
 
@@ -56,10 +52,6 @@ architecture syn of afc_base_regs is
   signal wb_wip                         : std_logic;
   signal metadata_rack                  : std_logic;
   signal metadata_re                    : std_logic;
-  signal csr_resets_global_reg          : std_logic;
-  signal csr_resets_appl_reg            : std_logic;
-  signal csr_resets_wreq                : std_logic;
-  signal csr_resets_wack                : std_logic;
   signal rd_ack_d0                      : std_logic;
   signal rd_dat_d0                      : std_logic_vector(31 downto 0);
   signal wr_req_d0                      : std_logic;
@@ -147,25 +139,6 @@ begin
     end if;
   end process;
 
-  -- Register csr_resets
-  csr_resets_global_o <= csr_resets_global_reg;
-  csr_resets_appl_o <= csr_resets_appl_reg;
-  process (clk_i) begin
-    if rising_edge(clk_i) then
-      if rst_n_i = '0' then
-        csr_resets_global_reg <= '0';
-        csr_resets_appl_reg <= '0';
-        csr_resets_wack <= '0';
-      else
-        if csr_resets_wreq = '1' then
-          csr_resets_global_reg <= wr_dat_d0(0);
-          csr_resets_appl_reg <= wr_dat_d0(1);
-        end if;
-        csr_resets_wack <= csr_resets_wreq;
-      end if;
-    end if;
-  end process;
-
   -- Register csr_fmc_presence
 
   -- Register csr_ddr_status
@@ -173,9 +146,8 @@ begin
   -- Register csr_pcb_rev
 
   -- Process for write requests.
-  process (wr_adr_d0, metadata_we, wr_req_d0, csr_resets_wack) begin
+  process (wr_adr_d0, metadata_we, wr_req_d0) begin
     metadata_wr_o <= '0';
-    csr_resets_wreq <= '0';
     case wr_adr_d0(6 downto 6) is
     when "0" => 
       -- Submap metadata
@@ -184,16 +156,12 @@ begin
     when "1" => 
       case wr_adr_d0(5 downto 2) is
       when "0000" => 
-        -- Reg csr_resets
-        csr_resets_wreq <= wr_req_d0;
-        wr_ack_int <= csr_resets_wack;
-      when "0001" => 
         -- Reg csr_fmc_presence
         wr_ack_int <= wr_req_d0;
-      when "0010" => 
+      when "0001" => 
         -- Reg csr_ddr_status
         wr_ack_int <= wr_req_d0;
-      when "0011" => 
+      when "0010" => 
         -- Reg csr_pcb_rev
         wr_ack_int <= wr_req_d0;
       when others =>
@@ -205,7 +173,7 @@ begin
   end process;
 
   -- Process for read requests.
-  process (wb_adr_i, metadata_data_i, metadata_rack, rd_req_int, csr_resets_global_reg, csr_resets_appl_reg, csr_fmc_presence_i, csr_ddr_status_calib_done_i, csr_pcb_rev_id_i) begin
+  process (wb_adr_i, metadata_data_i, metadata_rack, rd_req_int, csr_fmc_presence_i, csr_ddr_status_calib_done_i, csr_pcb_rev_id_i) begin
     -- By default ack read requests
     rd_dat_d0 <= (others => 'X');
     metadata_re <= '0';
@@ -218,21 +186,15 @@ begin
     when "1" => 
       case wb_adr_i(5 downto 2) is
       when "0000" => 
-        -- Reg csr_resets
-        rd_ack_d0 <= rd_req_int;
-        rd_dat_d0(0) <= csr_resets_global_reg;
-        rd_dat_d0(1) <= csr_resets_appl_reg;
-        rd_dat_d0(31 downto 2) <= (others => '0');
-      when "0001" => 
         -- Reg csr_fmc_presence
         rd_ack_d0 <= rd_req_int;
         rd_dat_d0 <= csr_fmc_presence_i;
-      when "0010" => 
+      when "0001" => 
         -- Reg csr_ddr_status
         rd_ack_d0 <= rd_req_int;
         rd_dat_d0(0) <= csr_ddr_status_calib_done_i;
         rd_dat_d0(31 downto 1) <= (others => '0');
-      when "0011" => 
+      when "0010" => 
         -- Reg csr_pcb_rev
         rd_ack_d0 <= rd_req_int;
         rd_dat_d0(3 downto 0) <= csr_pcb_rev_id_i;
