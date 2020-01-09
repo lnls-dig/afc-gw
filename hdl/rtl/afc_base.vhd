@@ -385,6 +385,10 @@ architecture top of afc_base is
   constant c_clk_200mhz_id                   : natural := 1;
   constant c_clk_pcie_id                     : natural := 2;
 
+  -- Number of auxiliary clocks
+  constant c_num_aux_clks                   : natural := 1; -- CLK_AUX
+  constant c_clk_aux_id                     : natural := 0;
+
   -- Metadata
   signal metadata_addr                       : std_logic_vector(5 downto 2);
   signal metadata_data                       : std_logic_vector(31 downto 0);
@@ -401,9 +405,10 @@ architecture top of afc_base is
   -- Clocks and resets signals
   signal locked                              : std_logic;
   signal uart_rstn                           : std_logic := '1';
-  signal clk_pcie                            : std_logic;
   signal clk_sys_pcie_rstn                   : std_logic;
   signal clk_sys_pcie_rst                    : std_logic;
+  signal clk_pcie_rstn                       : std_logic;
+  signal clk_pcie_rst                        : std_logic;
   signal clk_sys_rstn                        : std_logic;
   signal clk_sys_rst                         : std_logic;
   signal clk_200mhz_rst                      : std_logic;
@@ -412,16 +417,29 @@ architecture top of afc_base is
   signal rst_button_sys                      : std_logic;
   signal rst_button_sys_n                    : std_logic;
 
+  signal clk_aux                             : std_logic;
+  signal clk_aux_locked                      : std_logic;
+  signal clk_aux_rstn                        : std_logic;
+  signal clk_aux_rst                         : std_logic;
+
   signal clk_sys                             : std_logic;
   signal clk_200mhz                          : std_logic;
+  signal clk_pcie                            : std_logic;
 
   -- "c_num_tlvl_clks" clocks
   signal reset_clks                          : std_logic_vector(c_num_tlvl_clks-1 downto 0);
   signal reset_rstn                          : std_logic_vector(c_num_tlvl_clks-1 downto 0);
 
+  -- "c_num_aux_clks" clocks
+  signal reset_aux_clks                      : std_logic_vector(c_num_aux_clks-1 downto 0);
+  signal reset_aux_rstn                      : std_logic_vector(c_num_aux_clks-1 downto 0);
+
    -- Global Clock Single ended
   signal sys_clk_gen                         : std_logic;
   signal sys_clk_gen_bufg                    : std_logic;
+
+  signal aux_clk_gen                         : std_logic;
+  signal aux_clk_gen_bufg                    : std_logic;
 
   signal buttons_dummy                       : std_logic_vector(7 downto 0) := (others => '0');
   signal ddr_rdy                             : std_logic := '1';
