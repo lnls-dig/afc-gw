@@ -369,9 +369,9 @@ set_max_delay -datapath_only -from               [get_clocks clk_aux] -to [get_c
 # Constrain the PCIe core elements placement, so that it won't fail
 # timing analysis.
 # Comment out because we use nonstandard GTP location
-create_pblock GRP_pcie_core
-add_cells_to_pblock [get_pblocks GRP_pcie_core] [get_cells -hier -filter {NAME =~ *pcie_core_i/*}]
-resize_pblock [get_pblocks GRP_pcie_core] -add {CLOCKREGION_X0Y4:CLOCKREGION_X0Y4}
+#create_pblock GRP_pcie_core
+#add_cells_to_pblock [get_pblocks GRP_pcie_core] [get_cells -hier -filter {NAME =~ *pcie_core_i/*}]
+#resize_pblock [get_pblocks GRP_pcie_core] -add {CLOCKREGION_X0Y4:CLOCKREGION_X0Y4}
 #
 ## Place the DMA design not far from PCIe core, otherwise it also breaks timing
 #create_pblock GRP_ddr_core
