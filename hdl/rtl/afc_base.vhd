@@ -318,7 +318,7 @@ architecture top of afc_base is
   constant c_dev_sdb_address                : t_wishbone_address := f_sdb_auto_sdb   (c_dev_ma_layout_raw, c_dev_slv_layout_raw);
   constant c_dev_bridge_sdb                 : t_sdb_bridge       := f_xwb_bridge_layout_sdb(true, c_dev_layout, c_dev_sdb_address);
   constant c_dev_bridge_size                : unsigned(c_wishbone_address_width-1 downto 0) :=
-    f_sdb_bus_end(true, c_dev_layout, c_dev_sdb_address, false)(c_dev_bridge_size'range);
+    f_sdb_bus_end(true, c_dev_layout, c_dev_sdb_address, false)(c_wishbone_address_width-1 downto 0);
 
   -- Crossbar master/slave arrays
   signal cbar_dev_msi_slave_in               : t_wishbone_slave_in_array  (c_dev_slaves-1 downto 0) := (others => c_zero_master);
