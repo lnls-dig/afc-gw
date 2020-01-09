@@ -114,16 +114,16 @@ port (
   ---------------------------------------------------------------------------
 
   board_i2c_scl_b                          : inout std_logic;
-  board_i2c_sda_b                          : inout std_logic;
+  board_i2c_sda_b                          : inout std_logic
 
   ---------------------------------------------------------------------------
   -- Flash memory SPI interface
   ---------------------------------------------------------------------------
-
-  spi_sclk_o                               : out std_logic;
-  spi_cs_n_o                               : out std_logic;
-  spi_mosi_o                               : out std_logic;
-  spi_miso_i                               : in  std_logic := '0'
+  --
+  -- spi_sclk_o                               : out std_logic;
+  -- spi_cs_n_o                               : out std_logic;
+  -- spi_mosi_o                               : out std_logic;
+  -- spi_miso_i                               : in  std_logic := '0'
 );
 end entity afc_full;
 
@@ -197,7 +197,7 @@ begin
       g_WITH_UART_MASTER                       => true,
       g_WITH_DIAG                              => true,
       g_WITH_TRIGGER                           => true,
-      g_WITH_SPI                               => true,
+      g_WITH_SPI                               => false,
       g_WITH_BOARD_I2C                         => true,
       -- Number of user interrupts
       g_NUM_USER_IRQ                           => c_NUM_USER_IRQ,
@@ -294,12 +294,12 @@ begin
       ---------------------------------------------------------------------------
       -- Flash memory SPI interface
       ---------------------------------------------------------------------------
-
-      spi_sclk_o                               => spi_sclk_o,
-      spi_cs_n_o                               => spi_cs_n_o,
-      spi_mosi_o                               => spi_mosi_o,
-      spi_miso_i                               => spi_miso_i,
-
+     --
+     -- spi_sclk_o                               => spi_sclk_o,
+     -- spi_cs_n_o                               => spi_cs_n_o,
+     -- spi_mosi_o                               => spi_mosi_o,
+     -- spi_miso_i                               => spi_miso_i,
+     --
       ---------------------------------------------------------------------------
       -- Miscellanous AFC pins
       ---------------------------------------------------------------------------
