@@ -27,6 +27,8 @@ use work.wishbone_pkg.all;
 use work.trigger_common_pkg.all;
 -- AFC definitions
 use work.afc_base_pkg.all;
+-- IP cores constants
+use work.ipcores_pkg.all;
 
 entity afc_full is
 port (
