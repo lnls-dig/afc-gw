@@ -345,12 +345,15 @@ architecture top of afc_base is
     std_logic_vector(unsigned(c_wishbone_addr_max_size)-unsigned(c_top_sdb_offset)-c_dev_bridge_size);
   constant c_app_bridge_sdb                  : t_sdb_bridge := f_xwb_bridge_manual_sdb(c_app_bridge_size, g_APP_SDB_BRIDGE_ADDR);
 
+  constant c_top_app_bridge_offset           : t_wishbone_address :=
+    std_logic_vector(unsigned(c_top_sdb_offset) + unsigned(c_app_bridge_size));
+
   -- WB SDB (Self describing bus) layout
   constant c_top_slv_layout_raw : t_sdb_record_array(c_top_slaves-1 downto 0) :=
     (
     -- We want this to be fixed at c_top_sdb_offset. So SDB ROM can be at address 0x0
      c_top_dev_id                  => f_sdb_embed_bridge(c_dev_bridge_sdb,          c_top_sdb_offset),
-     c_top_app_id                  => f_sdb_auto_bridge(c_app_bridge_sdb,           g_WITH_APP_SDB_BRIDGE) -- Application bridge
+     c_top_app_id                  => f_sdb_embed_bridge(c_app_bridge_sdb,          c_top_app_bridge_offset) -- Application bridge
     );
 
   -- Self Describing Bus ROM Address. It will be an addressed slave as well
