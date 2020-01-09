@@ -464,9 +464,7 @@ architecture top of afc_base is
   signal trig_ref_clk                       : std_logic;
   signal trig_ref_rstn                      : std_logic;
 
-  signal trig_rcv_intern                    : t_trig_channel_array2d(c_trig_num_mux_interfaces-1 downto 0, c_trig_rcv_intern_num-1 downto 0);
-  signal trig_pulse_transm                  : t_trig_channel_array2d(c_trig_num_mux_interfaces-1 downto 0, c_trig_intern_num-1 downto 0);
-  signal trig_pulse_rcv                     : t_trig_channel_array2d(c_trig_num_mux_interfaces-1 downto 0, c_trig_intern_num-1 downto 0);
+  ---------------------------
 
   signal trig_dbg                           : std_logic_vector(7 downto 0);
 
