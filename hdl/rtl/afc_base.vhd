@@ -338,21 +338,25 @@ architecture top of afc_base is
   constant c_top_app_id                      : natural := 1; -- Application bus
 
   -- This could be extracted from the total SDB ROM SIZE
-  constant c_top_sdb_offset                  : t_wishbone_address := x"00010000";
+  constant c_top_bridge_offset               : t_wishbone_address := x"00010000";
   constant c_wishbone_addr_max_size          : t_wishbone_address := (others => '1');
-  -- Application bridge occupies everything after the BSP
-  constant c_app_bridge_size                 : t_wishbone_address :=
-    std_logic_vector(unsigned(c_wishbone_addr_max_size)-unsigned(c_top_sdb_offset)-c_dev_bridge_size);
+  -- Application bridge occupies everything after the BSP. Fix a large space for the
+  -- application.
+  constant c_app_bridge_size                 : t_wishbone_address := x"1FFFFFFF";
+
   constant c_app_bridge_sdb                  : t_sdb_bridge := f_xwb_bridge_manual_sdb(c_app_bridge_size, g_APP_SDB_BRIDGE_ADDR);
 
+  constant c_top_app_bridge_offset_raw       : t_wishbone_address :=
+    std_logic_vector(unsigned(c_top_bridge_offset) + unsigned(c_dev_bridge_size) + 1 +
+    unsigned(c_app_bridge_size) + 1);
   constant c_top_app_bridge_offset           : t_wishbone_address :=
-    std_logic_vector(unsigned(c_top_sdb_offset) + unsigned(c_app_bridge_size));
+    std_logic_vector(to_unsigned(2**f_ceil_log2(to_integer(unsigned(c_top_app_bridge_offset_raw))), c_wishbone_address_width)); -- next power of 2
 
   -- WB SDB (Self describing bus) layout
   constant c_top_slv_layout_raw : t_sdb_record_array(c_top_slaves-1 downto 0) :=
     (
-    -- We want this to be fixed at c_top_sdb_offset. So SDB ROM can be at address 0x0
-     c_top_dev_id                  => f_sdb_embed_bridge(c_dev_bridge_sdb,          c_top_sdb_offset),
+    -- We want this to be fixed at c_top_bridge_offset. So SDB ROM can be at address 0x0
+     c_top_dev_id                  => f_sdb_embed_bridge(c_dev_bridge_sdb,          c_top_bridge_offset),
      c_top_app_id                  => f_sdb_embed_bridge(c_app_bridge_sdb,          c_top_app_bridge_offset) -- Application bridge
     );
 
