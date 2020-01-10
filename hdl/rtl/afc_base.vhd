@@ -361,7 +361,7 @@ architecture top of afc_base is
     );
 
   -- Self Describing Bus ROM Address. It will be an addressed slave as well
-  constant c_top_layout                     : t_sdb_record_array := f_sdb_auto_layout(c_top_ma_layout_raw, c_top_slv_layout_raw);
+  constant c_top_layout                     : t_sdb_record_array := c_top_ma_layout_raw & c_top_slv_layout_raw;
   constant c_top_sdb_address                : t_wishbone_address := x"00000000";
   constant c_top_bridge_sdb                 : t_sdb_bridge       := f_xwb_bridge_layout_sdb(true, c_top_layout, c_top_sdb_address);
 
