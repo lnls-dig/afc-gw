@@ -29,6 +29,8 @@ use work.trigger_common_pkg.all;
 use work.afc_base_pkg.all;
 -- IP cores constants
 use work.ipcores_pkg.all;
+-- Meta Package
+use work.synthesis_descriptor_pkg.all;
 
 entity afc_full is
 port (
@@ -140,9 +142,21 @@ architecture top of afc_full is
   -- Number of masters
   constant c_masters                       : natural := 1;            -- Top master.
 
-  constant c_layout_raw : t_sdb_record_array(c_slaves-1 downto 0) :=
+  -- Slaves indexes
+  constant c_slv_dummy_id                  : natural := 0;
+  -- These are not account in the number of slaves as these are special
+  constant c_slv_sdb_repo_url_id           : natural := 1;
+  constant c_slv_sdb_top_syn_id            : natural := 2;
+  constant c_slv_sdb_gen_cores_id          : natural := 3;
+  constant c_slv_sdb_infra_cores_id        : natural := 4;
+
+  constant c_layout_raw : t_sdb_record_array(c_slaves+4-1 downto 0) :=
   (
-    0 => f_sdb_auto_device(c_DUMMY_SDB_DEVICE,             true)      -- Test interface
+    c_slv_dummy_id                => f_sdb_auto_device(c_DUMMY_SDB_DEVICE,             true),      -- Dummy device
+    c_slv_sdb_repo_url_id         => f_sdb_embed_repo_url(c_sdb_repo_url),
+    c_slv_sdb_top_syn_id          => f_sdb_embed_synthesis(c_sdb_top_syn_info),
+    c_slv_sdb_gen_cores_id        => f_sdb_embed_synthesis(c_sdb_general_cores_syn_info),
+    c_slv_sdb_infra_cores_id      => f_sdb_embed_synthesis(c_sdb_infra_cores_syn_info)
   );
 
   constant c_layout                        : t_sdb_record_array := f_sdb_auto_layout(c_layout_raw);

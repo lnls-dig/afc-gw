@@ -35,8 +35,6 @@ use work.trigger_common_pkg.all;
 use work.genram_pkg.all;
 -- IP cores constants
 use work.ipcores_pkg.all;
--- Meta Package
-use work.synthesis_descriptor_pkg.all;
 -- AXI cores
 use work.pcie_cntr_axi_pkg.all;
 -- AFC regs package
@@ -288,17 +286,12 @@ architecture top of afc_base is
   constant c_dev_slv_spi_id                  : natural := 4;
   constant c_dev_slv_afc_diag_id             : natural := 5;
   constant c_dev_slv_trig_iface_id           : natural := 6;
-  -- These are not account in the number of slaves as these are special
-  constant c_dev_slv_sdb_repo_url_id         : natural := 7;
-  constant c_dev_slv_sdb_top_syn_id          : natural := 8;
-  constant c_dev_slv_sdb_gen_cores_id        : natural := 9;
-  constant c_dev_slv_sdb_infra_cores_id      : natural := 10;
 
   -- General peripherals layout. UART, LEDs (GPIO), Buttons (GPIO) and Tics counter
   constant c_periph_bridge_sdb : t_sdb_bridge := f_xwb_bridge_manual_sdb(x"00000FFF", x"00000400");
 
   -- WB SDB (Self describing bus) layout
-  constant c_dev_slv_layout_raw : t_sdb_record_array(c_dev_slaves+4-1 downto 0) :=
+  constant c_dev_slv_layout_raw : t_sdb_record_array(c_dev_slaves-1 downto 0) :=
     (
      c_dev_slv_afc_base_id         => f_sdb_auto_device(c_xwb_afc_base_regs_sdb,    true),               -- AFC base registers control port
      c_dev_slv_periph_id           => f_sdb_auto_bridge(c_periph_bridge_sdb,        true),               -- General peripherals control port
@@ -306,11 +299,7 @@ architecture top of afc_base is
      c_dev_slv_vic_id              => f_sdb_auto_device(c_xwb_vic_sdb,              g_WITH_VIC),         -- VIC
      c_dev_slv_spi_id              => f_sdb_auto_device(c_xwb_spi_sdb,              g_WITH_SPI),         -- Flash SPI
      c_dev_slv_afc_diag_id         => f_sdb_auto_device(c_xwb_afc_diag_sdb,         g_WITH_DIAG),        -- AFC Diagnostics
-     c_dev_slv_trig_iface_id       => f_sdb_auto_device(c_xwb_trigger_iface_sdb,    g_WITH_TRIGGER),     -- Trigger Interface
-     c_dev_slv_sdb_repo_url_id     => f_sdb_embed_repo_url(c_sdb_repo_url),
-     c_dev_slv_sdb_top_syn_id      => f_sdb_embed_synthesis(c_sdb_top_syn_info),
-     c_dev_slv_sdb_gen_cores_id    => f_sdb_embed_synthesis(c_sdb_general_cores_syn_info),
-     c_dev_slv_sdb_infra_cores_id  => f_sdb_embed_synthesis(c_sdb_infra_cores_syn_info)
+     c_dev_slv_trig_iface_id       => f_sdb_auto_device(c_xwb_trigger_iface_sdb,    g_WITH_TRIGGER)      -- Trigger Interface
     );
 
   -- Self Describing Bus ROM Address. It will be an addressed slave as well
