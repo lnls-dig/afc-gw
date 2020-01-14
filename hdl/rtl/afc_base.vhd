@@ -215,15 +215,6 @@ end entity afc_base;
 
 architecture top of afc_base is
 
-  constant c_zero_master                     : t_wishbone_master_out := (
-    cyc => '0',
-    stb => '0',
-    adr => (others => '0'),
-    sel => (others => '0'),
-    we  => '0',
-    dat => (others => '0')
-  );
-
   -----------------------------------------------------------------------------
   -- Top crossbar layout
   -----------------------------------------------------------------------------
@@ -313,7 +304,7 @@ architecture top of afc_base is
     f_sdb_bus_end(true, c_dev_layout, c_dev_sdb_address, false)(c_wishbone_address_width-1 downto 0);
 
   -- Crossbar master/slave arrays
-  signal cbar_dev_msi_slave_in               : t_wishbone_slave_in_array  (c_dev_slaves-1 downto 0) := (others => c_zero_master);
+  signal cbar_dev_msi_slave_in               : t_wishbone_slave_in_array  (c_dev_slaves-1 downto 0) := (others => c_DUMMY_WB_SLAVE_IN);
   signal cbar_dev_msi_slave_out              : t_wishbone_slave_out_array (c_dev_slaves-1 downto 0);
   signal cbar_dev_bus_master_in              : t_wishbone_master_in_array (c_dev_slaves-1 downto 0);
   signal cbar_dev_bus_master_out             : t_wishbone_master_out_array(c_dev_slaves-1 downto 0);
@@ -387,7 +378,7 @@ architecture top of afc_base is
   constant c_top_bridge_sdb                 : t_sdb_bridge       := f_xwb_bridge_layout_sdb(true, c_top_layout, c_top_sdb_address);
 
   -- Crossbar master/slave arrays
-  signal cbar_top_msi_slave_in               : t_wishbone_slave_in_array  (c_top_slaves-1 downto 0) := (others => c_zero_master);
+  signal cbar_top_msi_slave_in               : t_wishbone_slave_in_array  (c_top_slaves-1 downto 0) := (others => c_DUMMY_WB_SLAVE_IN);
   signal cbar_top_msi_slave_out              : t_wishbone_slave_out_array (c_top_slaves-1 downto 0);
   signal cbar_top_bus_master_in              : t_wishbone_master_in_array (c_top_slaves-1 downto 0);
   signal cbar_top_bus_master_out             : t_wishbone_master_out_array(c_top_slaves-1 downto 0);
