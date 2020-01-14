@@ -209,7 +209,7 @@ port (
   --  For the exact used addresses see SDB Description.
   --  This is a pipelined wishbone with byte granularity.
   app_wb_o                                 : out t_wishbone_master_out;
-  app_wb_i                                 : in  t_wishbone_master_in
+  app_wb_i                                 : in  t_wishbone_master_in := c_DUMMY_WB_MASTER_IN
 );
 end entity afc_base;
 
@@ -322,6 +322,35 @@ architecture top of afc_base is
   -- Slave Top SDB layout.
   -----------------------------------------------------------------------------
 
+  -- Copied from upstream wishbone_pkg.vhd. Used until we merge it into our
+  -- general-cores.
+  function f_afc_sdb_embed_device(device : t_sdb_device; address : t_wishbone_address; enable : boolean := true)
+    return t_sdb_record
+  is
+    variable v_empty : t_sdb_record := (others => '0');
+  begin
+    v_empty(7 downto 0) := x"f1";
+    if enable then
+      return f_sdb_embed_device(device, address);
+    else
+      return v_empty;
+    end if;
+  end f_afc_sdb_embed_device;
+
+  function f_afc_sdb_embed_bridge(bridge : t_sdb_bridge; address : t_wishbone_address; enable : boolean := true)
+    return t_sdb_record
+  is
+    constant c_zero  : t_wishbone_address := (others => '0');
+    variable v_empty : t_sdb_record := (others => '0');
+  begin
+    v_empty(7 downto 0) := x"f2";
+    if enable then
+      return f_sdb_embed_bridge(bridge, address);
+    else
+      return v_empty;
+    end if;
+  end f_afc_sdb_embed_bridge;
+
   -- Number of slaves
   constant c_top_slaves                      : natural := 2;
 
@@ -349,7 +378,7 @@ architecture top of afc_base is
     (
     -- We want this to be fixed at c_top_bridge_offset. So SDB ROM can be at address 0x0
      c_top_dev_id                  => f_sdb_embed_bridge(c_dev_bridge_sdb,          c_top_bridge_offset),
-     c_top_app_id                  => f_sdb_embed_bridge(c_app_bridge_sdb,          c_top_app_bridge_offset) -- Application bridge
+     c_top_app_id                  => f_afc_sdb_embed_bridge(c_app_bridge_sdb,      c_top_app_bridge_offset, g_WITH_APP_SDB_BRIDGE) -- Application bridge
     );
 
   -- Self Describing Bus ROM Address. It will be an addressed slave as well

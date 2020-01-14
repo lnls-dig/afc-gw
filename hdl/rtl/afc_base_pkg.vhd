@@ -193,7 +193,7 @@ package afc_base_pkg is
     --  For the exact used addresses see SDB Description.
     --  This is a pipelined wishbone with byte granularity.
     app_wb_o                                 : out t_wishbone_master_out;
-    app_wb_i                                 : in  t_wishbone_master_in
+    app_wb_i                                 : in  t_wishbone_master_in := c_DUMMY_WB_MASTER_IN
   );
   end component;
 
