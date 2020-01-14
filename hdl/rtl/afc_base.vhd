@@ -359,10 +359,10 @@ architecture top of afc_base is
   constant c_app_bridge_sdb                  : t_sdb_bridge := f_xwb_bridge_manual_sdb(c_app_bridge_size, g_APP_SDB_BRIDGE_ADDR);
 
   constant c_top_app_bridge_offset_raw       : t_wishbone_address :=
-    std_logic_vector(unsigned(c_top_bridge_offset) + unsigned(c_dev_bridge_size) + 1 +
-    unsigned(c_app_bridge_size) + 1);
+    std_logic_vector(unsigned(c_top_bridge_offset) + unsigned(c_dev_bridge_size) + 1);
   constant c_top_app_bridge_offset           : t_wishbone_address :=
-    std_logic_vector(to_unsigned(2**f_ceil_log2(to_integer(unsigned(c_top_app_bridge_offset_raw))), c_wishbone_address_width)); -- next power of 2
+    std_logic_vector(f_align_addr_offset(unsigned(c_top_app_bridge_offset_raw), unsigned(c_app_bridge_size),
+    unsigned(c_top_bridge_offset) - 1)(c_wishbone_address_width-1 downto 0));
 
   -- WB SDB (Self describing bus) layout
   constant c_top_slv_layout_raw : t_sdb_record_array(c_top_slaves-1 downto 0) :=
