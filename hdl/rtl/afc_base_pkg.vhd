@@ -35,6 +35,9 @@ package afc_base_pkg is
     g_WITH_TRIGGER                           : boolean := true;
     g_WITH_SPI                               : boolean := true;
     g_WITH_BOARD_I2C                         : boolean := true;
+    -- Auxiliary clock used to sync incoming triggers in the trigger module.
+    -- If false, trigger will be synch'ed with clk_sys
+    g_WITH_AUX_CLK                           : boolean := true;
     -- Number of user interrupts
     g_NUM_USER_IRQ                           : natural := 1;
     -- Bridge SDB record of the application meta-data. If false, no address is
@@ -49,8 +52,8 @@ package afc_base_pkg is
     sys_clk_p_i                              : in std_logic;
     sys_clk_n_i                              : in std_logic;
 
-    aux_clk_p_i                              : in std_logic;
-    aux_clk_n_i                              : in std_logic;
+    aux_clk_p_i                              : in std_logic := '0';
+    aux_clk_n_i                              : in std_logic := '1';
 
     ---------------------------------------------------------------------------
     -- Reset Button

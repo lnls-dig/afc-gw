@@ -51,6 +51,9 @@ generic (
   g_WITH_TRIGGER                           : boolean := true;
   g_WITH_SPI                               : boolean := true;
   g_WITH_BOARD_I2C                         : boolean := true;
+  -- Auxiliary clock used to sync incoming triggers in the trigger module.
+  -- If false, trigger will be synch'ed with clk_sys
+  g_WITH_AUX_CLK                           : boolean := true;
   -- Number of user interrupts
   g_NUM_USER_IRQ                           : natural := 1;
   -- Bridge SDB record of the application meta-data. If false, no address is
@@ -65,8 +68,8 @@ port (
   sys_clk_p_i                              : in std_logic;
   sys_clk_n_i                              : in std_logic;
 
-  aux_clk_p_i                              : in std_logic;
-  aux_clk_n_i                              : in std_logic;
+  aux_clk_p_i                              : in std_logic := '0';
+  aux_clk_n_i                              : in std_logic := '1';
 
   ---------------------------------------------------------------------------
   -- Reset Button
@@ -622,49 +625,62 @@ begin
   -- Auxiliary clock generation
   -----------------------------------------------------------------------------
 
-  cmp_aux_clk_gen : clk_gen_mgt
-  port map (
-    sys_clk_p_i                              => aux_clk_p_i,
-    sys_clk_n_i                              => aux_clk_n_i,
-    sys_clk_o                                => aux_clk_gen,
-    sys_clk_bufg_o                           => aux_clk_gen_bufg
-  );
+  gen_with_aux_clk : if g_WITH_AUX_CLK generate
 
-   -- Auxiliary clock
-  cmp_aux_sys_pll_inst : sys_pll
-  generic map (
-    -- RF*5/36 ~ 69.44 MHz input clock ~ 14.4 ns
-    g_clkin_period                           => 14.400,
-    g_divclk_divide                          => 1,
-    g_clkbout_mult_f                         => 18,
+    cmp_aux_clk_gen : clk_gen_mgt
+    port map (
+      sys_clk_p_i                              => aux_clk_p_i,
+      sys_clk_n_i                              => aux_clk_n_i,
+      sys_clk_o                                => aux_clk_gen,
+      sys_clk_bufg_o                           => aux_clk_gen_bufg
+    );
 
-    -- 125 MHz output clock
-    g_clk0_divide_f                          => 10
-  )
-  port map (
-    rst_i                                    => '0',
-    clk_i                                    => aux_clk_gen_bufg,
-    --clk_i                                    => aux_clk_gen,
-    clk0_o                                   => clk_aux,              -- 125MHz locked clock
-    clk1_o                                   => open,
-    clk2_o                                   => open,
-    locked_o                                 => clk_aux_locked        -- '1' when the PLL has locked
-  );
+     -- Auxiliary clock
+    cmp_aux_sys_pll_inst : sys_pll
+    generic map (
+      -- RF*5/36 ~ 69.44 MHz input clock ~ 14.4 ns
+      g_clkin_period                           => 14.400,
+      g_divclk_divide                          => 1,
+      g_clkbout_mult_f                         => 18,
 
-  -- Reset synchronization. Hold reset line until few locked cycles have passed.
-  cmp_aux_reset : gc_reset
-  generic map(
-    g_clocks                                 => c_num_aux_clks        -- CLK_AUX
-  )
-  port map(
-    --free_clk_i                               => aux_clk_gen,
-    free_clk_i                               => aux_clk_gen_bufg,
-    locked_i                                 => clk_aux_locked,
-    clks_i                                   => reset_aux_clks,
-    rstn_o                                   => reset_aux_rstn
-  );
+      -- 125 MHz output clock
+      g_clk0_divide_f                          => 10
+    )
+    port map (
+      rst_i                                    => '0',
+      clk_i                                    => aux_clk_gen_bufg,
+      --clk_i                                    => aux_clk_gen,
+      clk0_o                                   => clk_aux,              -- 125MHz locked clock
+      clk1_o                                   => open,
+      clk2_o                                   => open,
+      locked_o                                 => clk_aux_locked        -- '1' when the PLL has locked
+    );
 
-  reset_aux_clks(c_clk_aux_id)               <= clk_aux;
+    -- Reset synchronization. Hold reset line until few locked cycles have passed.
+    cmp_aux_reset : gc_reset
+    generic map(
+      g_clocks                                 => c_num_aux_clks        -- CLK_AUX
+    )
+    port map(
+      --free_clk_i                               => aux_clk_gen,
+      free_clk_i                               => aux_clk_gen_bufg,
+      locked_i                                 => clk_aux_locked,
+      clks_i                                   => reset_aux_clks,
+      rstn_o                                   => reset_aux_rstn
+    );
+
+    reset_aux_clks(c_clk_aux_id)               <= clk_aux;
+
+  end generate;
+
+  gen_without_aux_clk : if not g_WITH_AUX_CLK generate
+
+    clk_aux                                    <= '0';
+    clk_aux_locked                             <= '0';
+
+    reset_aux_rstn                             <= (others => '1');
+
+  end generate;
 
   -- Auxiliary reset
   clk_aux_rstn                               <= reset_aux_rstn(c_clk_aux_id);
@@ -1155,8 +1171,19 @@ begin
   -- Trigger
   -----------------------------------------------------------------------------
 
-  trig_ref_clk <= clk_aux;
-  trig_ref_rstn <= clk_aux_rstn;
+  gen_trigger_with_aux_clk : if g_WITH_AUX_CLK generate
+
+    trig_ref_clk <= clk_aux;
+    trig_ref_rstn <= clk_aux_rstn;
+
+  end generate;
+
+  gen_trigger_without_aux_clk : if not g_WITH_AUX_CLK generate
+
+    trig_ref_clk <= clk_sys;
+    trig_ref_rstn <= clk_sys_rstn;
+
+  end generate;
 
   gen_with_trigger: if g_WITH_TRIGGER generate
 
