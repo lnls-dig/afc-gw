@@ -20,7 +20,6 @@ package afc_base_pkg is
   -- SDB Devices Structures
   --------------------------------------------------------------------
 
-  -- AFC MGMT
   constant c_dummy_sdb_bridge : t_sdb_record := (511 downto 8 => '0') & x"02";
 
   --------------------------------------------------------------------
