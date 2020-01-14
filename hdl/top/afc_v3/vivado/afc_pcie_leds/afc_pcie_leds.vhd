@@ -143,12 +143,12 @@ begin
   cmp_afc_base : afc_base
     generic map (
       --  If true, instantiate a VIC/UART/DIAG/SPI.
-      g_WITH_VIC                               => true,
-      g_WITH_UART_MASTER                       => true,
-      g_WITH_DIAG                              => true,
-      g_WITH_TRIGGER                           => true,
+      g_WITH_VIC                               => false,
+      g_WITH_UART_MASTER                       => false,
+      g_WITH_DIAG                              => false,
+      g_WITH_TRIGGER                           => false,
       g_WITH_SPI                               => false,
-      g_WITH_BOARD_I2C                         => true,
+      g_WITH_BOARD_I2C                         => false,
       -- Auxiliary clock used to sync incoming triggers in the trigger module.
       -- If false, trigger will be synch'ed with clk_sys
       g_WITH_AUX_CLK                           => false,
