@@ -391,7 +391,7 @@ architecture top of afc_base is
   constant c_leds_num_pins                   : natural := 3;
   constant c_with_leds_heartbeat             : t_boolean_array(c_leds_num_pins-1 downto 0) :=
                                                  (2 => false,  -- Red LED
-                                                  1 => false,  -- Green LED
+                                                  1 => true,   -- Green LED
                                                   0 => false); -- Blue LED
   constant c_buttons_num_pins                : natural := 8;
 
