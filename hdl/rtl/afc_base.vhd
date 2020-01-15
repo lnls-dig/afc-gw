@@ -350,11 +350,13 @@ architecture top of afc_base is
   constant c_top_app_id                      : natural := 1; -- Application bus
 
   -- This could be extracted from the total SDB ROM SIZE
-  constant c_top_bridge_offset               : t_wishbone_address := x"00010000";
+  constant c_top_bridge_offset               : t_wishbone_address := x"01000000";
   constant c_wishbone_addr_max_size          : t_wishbone_address := (others => '1');
   -- Application bridge occupies everything after the BSP. Fix a large space for the
-  -- application.
-  constant c_app_bridge_size                 : t_wishbone_address := x"1FFFFFFF";
+  -- application. FIXME in infra-cores. We can't use the 3 MSB bits as AFC PCIe
+  -- is 64-bit addressed, but it uses the 29 available address bits as 8-bit addressed,
+  -- thus loosing the capability of addressing the 3 MSBs.
+  constant c_app_bridge_size                 : t_wishbone_address := x"01FFFFFF";
 
   constant c_app_bridge_sdb                  : t_sdb_bridge := f_xwb_bridge_manual_sdb(c_app_bridge_size, g_APP_SDB_BRIDGE_ADDR);
 
