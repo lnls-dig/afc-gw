@@ -1,5 +1,5 @@
 files = [
-    "afc_pcie_leds.vhd"
+    "afc_full.vhd"
 ]
 
 modules = {

@@ -11,8 +11,8 @@ if locals().get('fetchto', None) is None:
 syn_device = "xc7a200t"
 syn_grade = "-2"
 syn_package = "ffg1156"
-syn_top = "afc_pcie_leds"
-syn_project = "afc_pcie_leds"
+syn_top = "afc_full"
+syn_project = "afc_full"
 syn_tool = "vivado"
 syn_properties = [
     ["steps.synth_design.args.more options", "-verbose"],
@@ -36,7 +36,7 @@ else:
 
 modules = {
   "local" : [
-      "../../../../top/afc_v3/vivado/afc_pcie_leds",
+      "../../../../top/afc_v3/vivado/full",
   ],
   "git" : [
       "https://github.com/lnls-dig/infra-cores.git",
