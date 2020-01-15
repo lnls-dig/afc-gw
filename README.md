@@ -12,20 +12,13 @@
 |    |    |   Third party reusable modules, primarily Open hardware
 |    |    |     modules (http://www.ohwr.org).
 |    |    |
-|    |    |-- etherbone-core:
-|    |    |       Connects two Wishbone buses, either a true hardware bus
-|    |    |         or emulated software bus, through Ethernet.
+|    |    |-- infra-cores:
+|    |    |       General reusable modules from LNLS.
 |    |    |-- general-cores (fork from original project):
-|    |            General reusable modules.
+|    |            General reusable modules from OHWR.
 |    |
 |    |-- modules:
-|    |    |   Modules specific to AFC hardware.
-|    |    |
-|    |    |-- custom_common:
-|    |    |       Common (reusable) modules to AFC hardware and possibly
-|    |    |         to other designs.
-|    |    |-- custom_wishbone:
-|    |            Wishbone modules to AFC hardware.
+|    |        Modules specific to this project.
 |    |
 |    |-- platform:
 |    |        Platform-specific code, such as Xilinx Chipscope wrappers.
@@ -50,8 +43,6 @@
 
 This repository makes use of git submodules, located at 'hdl/ip_cores' folder:
   hdl/ip_cores/general-cores
-  hdl/ip_cores/etherbone-core
-  hdl/ip_cores/dsp-cores
   hdl/ip_cores/infra-cores
 
 To clone the whole repository use the following command:
