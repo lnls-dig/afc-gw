@@ -363,7 +363,8 @@ architecture top of afc_base is
   constant c_top_app_bridge_offset_raw       : t_wishbone_address :=
     std_logic_vector(unsigned(c_top_bridge_offset) + unsigned(c_dev_bridge_size) + 1);
   constant c_top_app_bridge_offset           : t_wishbone_address :=
-    std_logic_vector(f_align_addr_offset(unsigned(c_top_app_bridge_offset_raw), unsigned(c_app_bridge_size),
+    std_logic_vector(f_align_addr_offset(unsigned(c_top_app_bridge_offset_raw),
+    unsigned(c_app_bridge_size),
     unsigned(c_top_bridge_offset) - 1)(c_wishbone_address_width-1 downto 0));
 
   -- WB SDB (Self describing bus) layout
@@ -376,8 +377,8 @@ architecture top of afc_base is
 
   -- Self Describing Bus ROM Address. It will be an addressed slave as well
   constant c_top_layout                     : t_sdb_record_array := c_top_ma_layout_raw & c_top_slv_layout_raw;
-  constant c_top_sdb_address                : t_wishbone_address := x"00000000";
-  constant c_top_bridge_sdb                 : t_sdb_bridge       := f_xwb_bridge_layout_sdb(true, c_top_layout, c_top_sdb_address);
+  constant c_top_sdb_address                 : t_wishbone_address := x"00000000";
+  constant c_top_bridge_sdb                  : t_sdb_bridge       := f_xwb_bridge_layout_sdb(true, c_top_layout, c_top_sdb_address);
 
   -- Crossbar master/slave arrays
   signal cbar_top_msi_slave_in               : t_wishbone_slave_in_array  (c_top_slaves-1 downto 0) := (others => c_DUMMY_WB_SLAVE_IN);
