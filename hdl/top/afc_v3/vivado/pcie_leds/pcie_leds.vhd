@@ -32,7 +32,7 @@ use work.ipcores_pkg.all;
 -- Meta Package
 use work.synthesis_descriptor_pkg.all;
 
-entity afc_pcie_leds is
+entity pcie_leds is
 port(
   -----------------------------------------
   -- Clocking pins
@@ -86,9 +86,9 @@ port(
   -----------------------------------------
   leds_o                                   : out std_logic_vector(2 downto 0)
 );
-end afc_pcie_leds;
+end pcie_leds;
 
-architecture rtl of afc_pcie_leds is
+architecture rtl of pcie_leds is
 
   constant c_NUM_USER_IRQ                  : natural := 1;
 
