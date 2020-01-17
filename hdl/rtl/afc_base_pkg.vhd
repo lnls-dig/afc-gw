@@ -8,6 +8,8 @@ use work.wishbone_pkg.all;
 use work.ipcores_pkg.all;
 -- Trigger Common Modules
 use work.trigger_common_pkg.all;
+-- AXI cores
+use work.pcie_cntr_axi_pkg.all;
 
 package afc_base_pkg is
 
