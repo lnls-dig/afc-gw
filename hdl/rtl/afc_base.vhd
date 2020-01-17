@@ -193,6 +193,9 @@ port (
   clk_pcie_o                               : out std_logic;
   rst_pcie_n_o                             : out std_logic;
 
+  clk_trig_ref_o                           : out std_logic;
+  rst_trig_ref_n_o                         : out std_logic;
+
   --  Interrupts
   irq_user_i                               : in std_logic_vector(g_NUM_USER_IRQ + 5 downto 6) := (others => '0');
 
@@ -1225,6 +1228,9 @@ begin
     trig_ref_rstn <= clk_sys_rstn;
 
   end generate;
+
+  clk_trig_ref_o <= trig_ref_clk;
+  rst_trig_ref_n_o <= trig_ref_rstn;
 
   gen_with_trigger: if g_WITH_TRIGGER generate
 

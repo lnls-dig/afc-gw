@@ -176,6 +176,9 @@ package afc_base_pkg is
     clk_pcie_o                               : out std_logic;
     rst_pcie_n_o                             : out std_logic;
 
+    clk_trig_ref_o                           : out std_logic;
+    rst_trig_ref_n_o                         : out std_logic;
+
     --  Interrupts
     irq_user_i                               : in std_logic_vector(g_NUM_USER_IRQ + 5 downto 6) := (others => '0');
 
