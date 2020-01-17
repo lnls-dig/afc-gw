@@ -731,40 +731,40 @@ begin
 
   cmp_xwb_pcie_cntr : xwb_pcie_cntr
   generic map (
-    g_ma_interface_mode                       => PIPELINED,
-    g_ma_address_granularity                  => BYTE,
-    g_simulation                              => "FALSE"
+    g_ma_interface_mode                      => PIPELINED,
+    g_ma_address_granularity                 => BYTE,
+    g_simulation                             => "FALSE"
   )
   port map (
     -- DDR3 memory pins
-    ddr3_dq_b                                 => ddr3_dq_b,
-    ddr3_dqs_p_b                              => ddr3_dqs_p_b,
-    ddr3_dqs_n_b                              => ddr3_dqs_n_b,
-    ddr3_addr_o                               => ddr3_addr_o,
-    ddr3_ba_o                                 => ddr3_ba_o,
-    ddr3_cs_n_o                               => ddr3_cs_n_o,
-    ddr3_ras_n_o                              => ddr3_ras_n_o,
-    ddr3_cas_n_o                              => ddr3_cas_n_o,
-    ddr3_we_n_o                               => ddr3_we_n_o,
-    ddr3_reset_n_o                            => ddr3_reset_n_o,
-    ddr3_ck_p_o                               => ddr3_ck_p_o,
-    ddr3_ck_n_o                               => ddr3_ck_n_o,
-    ddr3_cke_o                                => ddr3_cke_o,
-    ddr3_dm_o                                 => ddr3_dm_o,
-    ddr3_odt_o                                => ddr3_odt_o,
+    ddr3_dq_b                                => ddr3_dq_b,
+    ddr3_dqs_p_b                             => ddr3_dqs_p_b,
+    ddr3_dqs_n_b                             => ddr3_dqs_n_b,
+    ddr3_addr_o                              => ddr3_addr_o,
+    ddr3_ba_o                                => ddr3_ba_o,
+    ddr3_cs_n_o                              => ddr3_cs_n_o,
+    ddr3_ras_n_o                             => ddr3_ras_n_o,
+    ddr3_cas_n_o                             => ddr3_cas_n_o,
+    ddr3_we_n_o                              => ddr3_we_n_o,
+    ddr3_reset_n_o                           => ddr3_reset_n_o,
+    ddr3_ck_p_o                              => ddr3_ck_p_o,
+    ddr3_ck_n_o                              => ddr3_ck_n_o,
+    ddr3_cke_o                               => ddr3_cke_o,
+    ddr3_dm_o                                => ddr3_dm_o,
+    ddr3_odt_o                               => ddr3_odt_o,
 
     -- PCIe transceivers
-    pci_exp_rxp_i                             => pci_exp_rxp_i,
-    pci_exp_rxn_i                             => pci_exp_rxn_i,
-    pci_exp_txp_o                             => pci_exp_txp_o,
-    pci_exp_txn_o                             => pci_exp_txn_o,
+    pci_exp_rxp_i                            => pci_exp_rxp_i,
+    pci_exp_rxn_i                            => pci_exp_rxn_i,
+    pci_exp_txp_o                            => pci_exp_txp_o,
+    pci_exp_txn_o                            => pci_exp_txn_o,
 
     -- Necessity signals
-    ddr_clk_i                                 => clk_200mhz,        --200 MHz DDR core clock (connect through BUFG or PLL)
-    ddr_rst_i                                 => clk_200mhz_rst,
-    pcie_clk_p_i                              => pcie_clk_p_i,      --100 MHz PCIe Clock (connect directly to input pin)
-    pcie_clk_n_i                              => pcie_clk_n_i,      --100 MHz PCIe Clock
-    pcie_rst_n_i                              => clk_sys_pcie_rstn, -- PCIe core reset
+    ddr_clk_i                                => clk_200mhz,        --200 MHz DDR core clock (connect through BUFG or PLL)
+    ddr_rst_i                                => clk_200mhz_rst,
+    pcie_clk_p_i                             => pcie_clk_p_i,      --100 MHz PCIe Clock (connect directly to input pin)
+    pcie_clk_n_i                             => pcie_clk_n_i,      --100 MHz PCIe Clock
+    pcie_rst_n_i                             => clk_sys_pcie_rstn, -- PCIe core reset
 
     -- DDR memory controller interface --
     ddr_aximm_sl_aclk_o                      => ddr_aximm_sl_aclk_o,
@@ -775,7 +775,7 @@ begin
     ddr_aximm_w_sl_o                         => ddr_aximm_w_sl_o,
 
     -- Wishbone interface --
-    wb_clk_i                                  => clk_sys,
+    wb_clk_i                                 => clk_sys,
     -- Reset wishbone interface with the same reset as the other
     -- modules, including a reset coming from the PCIe itself.
     wb_rst_i                                 => clk_sys_rst,
