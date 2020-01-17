@@ -179,6 +179,16 @@ package afc_base_pkg is
     --  Interrupts
     irq_user_i                               : in std_logic_vector(g_NUM_USER_IRQ + 5 downto 6) := (others => '0');
 
+    -- DDR memory controller interface --
+    ddr_aximm_sl_aclk_o                      : out std_logic;
+    ddr_aximm_sl_aresetn_o                   : out std_logic;
+    -- AXIMM Read Channel
+    ddr_aximm_r_sl_i                         : in t_aximm_r_slave_in := cc_dummy_aximm_r_slave_in;
+    ddr_aximm_r_sl_o                         : out t_aximm_r_slave_out;
+    -- AXIMM Write Channel
+    ddr_aximm_w_sl_i                         : in t_aximm_w_slave_in := cc_dummy_aximm_w_slave_in;
+    ddr_aximm_w_sl_o                         : out t_aximm_w_slave_out;
+
     -- Trigger
     trig_out_o                               : out t_trig_channel_array(c_NUM_TRIG-1 downto 0);
     trig_in_i                                : in  t_trig_channel_array(c_NUM_TRIG-1 downto 0) := (others => c_trig_channel_dummy);
