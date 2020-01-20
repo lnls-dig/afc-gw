@@ -63,27 +63,27 @@ set_max_delay -datapath_only -from               [get_clocks clk_sys]   -to [get
 set_max_delay -datapath_only -from               [get_clocks clk_pll_i] -to [get_clocks clk_sys]   $clk_pll_ddr_period
 
 # Acquisition core register CDC
-set_max_delay -datapath_only -from               [get_pins -hier -filter {NAME =~ *acq_core/*acq_fc_fifo/lmt_*_pkt*/C}] -to [get_clocks clk_pll_i] $clk_pll_ddr_period
-set_max_delay -datapath_only -from               [get_pins -hier -filter {NAME =~ *acq_core/*acq_fc_fifo/lmt_shots*/C}] -to [get_clocks clk_pll_i] $clk_pll_ddr_period
-set_max_delay -datapath_only -from               [get_pins -hier -filter {NAME =~ *acq_core/*acq_fc_fifo/lmt_curr_chan*/C}] -to [get_clocks clk_pll_i] $clk_pll_ddr_period
+set_max_delay -datapath_only -from               [get_pins -hier -filter {NAME =~ *afc_base/*acq_core/*acq_fc_fifo/lmt_*_pkt*/C}] -to [get_clocks clk_pll_i] $clk_pll_ddr_period
+set_max_delay -datapath_only -from               [get_pins -hier -filter {NAME =~ *afc_base/*acq_core/*acq_fc_fifo/lmt_shots*/C}] -to [get_clocks clk_pll_i] $clk_pll_ddr_period
+set_max_delay -datapath_only -from               [get_pins -hier -filter {NAME =~ *afc_base/*acq_core/*acq_fc_fifo/lmt_curr_chan*/C}] -to [get_clocks clk_pll_i] $clk_pll_ddr_period
 
-set_max_delay -datapath_only -from               [get_pins -hier -filter {NAME =~ *acq_core/*acq_ddr3_iface/lmt_*_pkt*/C}] -to [get_clocks clk_pll_i] $clk_pll_ddr_period
-set_max_delay -datapath_only -from               [get_pins -hier -filter {NAME =~ *acq_core/*acq_ddr3_iface/lmt_shots*/C}] -to [get_clocks clk_pll_i] $clk_pll_ddr_period
-set_max_delay -datapath_only -from               [get_pins -hier -filter {NAME =~ *acq_core/*acq_ddr3_iface/lmt_curr_chan*/C}] -to [get_clocks clk_pll_i] $clk_pll_ddr_period
+set_max_delay -datapath_only -from               [get_pins -hier -filter {NAME =~ *afc_base/*acq_core/*acq_ddr3_iface/lmt_*_pkt*/C}] -to [get_clocks clk_pll_i] $clk_pll_ddr_period
+set_max_delay -datapath_only -from               [get_pins -hier -filter {NAME =~ *afc_base/*acq_core/*acq_ddr3_iface/lmt_shots*/C}] -to [get_clocks clk_pll_i] $clk_pll_ddr_period
+set_max_delay -datapath_only -from               [get_pins -hier -filter {NAME =~ *afc_base/*acq_core/*acq_ddr3_iface/lmt_curr_chan*/C}] -to [get_clocks clk_pll_i] $clk_pll_ddr_period
 
 # This path is only valid after acq_start signal, which is controlled by software and
 # is activated many many miliseconds after all of the other. So, give it 2x the clock
 # period
-set_max_delay -datapath_only -from [get_pins -hier -filter {NAME =~ *acq_core/*/regs_o_reg[acq_chan_ctl_which_o][*]/C}] -to [get_pins -hier -filter {NAME =~ *acq_core/*/acq_in_post_trig_reg/D}] 8.000
-set_max_delay -datapath_only -from [get_pins -hier -filter {NAME =~ *acq_core/*/regs_o_reg[acq_chan_ctl_which_o][*]/C}] -to [get_clocks fs1_ref_clk] 8.000
-set_max_delay -datapath_only -from [get_pins -hier -filter {NAME =~ *acq_core/*/regs_o_reg[acq_chan_ctl_which_o][*]/C}] -to [get_clocks fs2_ref_clk] 8.000
+set_max_delay -datapath_only -from [get_pins -hier -filter {NAME =~ *afc_base/*acq_core/*/regs_o_reg[acq_chan_ctl_which_o][*]/C}] -to [get_pins -hier -filter {NAME =~ *afc_base/*acq_core/*/acq_in_post_trig_reg/D}] 8.000
+set_max_delay -datapath_only -from [get_pins -hier -filter {NAME =~ *afc_base/*acq_core/*/regs_o_reg[acq_chan_ctl_which_o][*]/C}] -to [get_clocks fs1_ref_clk] 8.000
+set_max_delay -datapath_only -from [get_pins -hier -filter {NAME =~ *afc_base/*acq_core/*/regs_o_reg[acq_chan_ctl_which_o][*]/C}] -to [get_clocks fs2_ref_clk] 8.000
 
 # This path is only valid after acq_start
 # signal, which is controlled by software and
 # is activated many many miliseconds after
 # all of the other. So, give it 1x the
 # destination clock period
-set_max_delay -datapath_only -from               [get_pins -hier -filter {NAME =~ *acq_core/*acq_core_regs/*/C}] -to [get_clocks clk_sys] $clk_sys_period
+set_max_delay -datapath_only -from               [get_pins -hier -filter {NAME =~ *afc_base/*acq_core/*acq_core_regs/*/C}] -to [get_clocks clk_sys] $clk_sys_period
 
 # Use Distributed RAM, as these FIFOs are small and sparse through the module
 # Cannot make this work with hierarchical matching... only by specifying the
