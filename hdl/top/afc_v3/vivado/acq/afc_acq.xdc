@@ -85,14 +85,6 @@ set_max_delay -datapath_only -from [get_pins -hier -filter {NAME =~ *afc_base/*a
 # destination clock period
 set_max_delay -datapath_only -from               [get_pins -hier -filter {NAME =~ *afc_base/*acq_core/*acq_core_regs/*/C}] -to [get_clocks clk_sys] $clk_sys_period
 
-# Use Distributed RAM, as these FIFOs are small and sparse through the module
-# Cannot make this work with hierarchical matching... only by specifying the
-# whole topology
-set_property RAM_STYLE DISTRIBUTED [get_cells -hier -filter {NAME =~ */cmp_position_calc_cdc_fifo/mem_reg*}]
-
-# Use Distributed RAMs for FMC ADC CDC FIFOs. They are small and sparse.
-set_property RAM_STYLE DISTRIBUTED [get_cells -hier -filter {NAME =~ */cmp_fmc_adc_iface/*/cmp_adc_data_async_fifo/mem_reg*}]
-
 # Use Distributed RAMs for FMC ACQ FIFOs. They are small and sparse.
 set_property RAM_STYLE DISTRIBUTED [get_cells -hier -filter {NAME =~ */cmp_acq_fc_fifo/cmp_fc_source/*/*ram_reg*}]
 
