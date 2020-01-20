@@ -40,10 +40,10 @@ set_max_delay -datapath_only -from               [get_clocks fs1_ref_clk]    -to
 set_max_delay -datapath_only -from               [get_clocks fs2_ref_clk]    -to [get_clocks clk_sys] $fs2_ref_clk_period
 
 # FIFO CDC timimng. Using < faster clock period
-set_max_delay -datapath_only -from               [get_clocks clk_pll_i]    -to [get_clocks fs1_ref_clk]   $clk_pll_ddr_period_less
+set_max_delay -datapath_only -from               [get_clocks clk_pll_i]   -to [get_clocks fs1_ref_clk]   $clk_pll_ddr_period_less
 set_max_delay -datapath_only -from               [get_clocks fs1_ref_clk] -to [get_clocks clk_pll_i]      $clk_pll_ddr_period_less
 
-set_max_delay -datapath_only -from               [get_clocks clk_pll_i]    -to [get_clocks fs2_ref_clk]   $clk_pll_ddr_period_less
+set_max_delay -datapath_only -from               [get_clocks clk_pll_i]   -to [get_clocks fs2_ref_clk]   $clk_pll_ddr_period_less
 set_max_delay -datapath_only -from               [get_clocks fs2_ref_clk] -to [get_clocks clk_pll_i]      $clk_pll_ddr_period_less
 
 # FIFO generated CDC. Xilinx recommends 2x the slower clock period delay. But let's be more strict and allow
