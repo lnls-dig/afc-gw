@@ -21,30 +21,32 @@
 #######################################################################
 
 # ADC generated clocks
-create_generated_clock -name fs1_ref_clk         [get_pins -hier -filter {NAME =~ *cmp_afc_base/*cmp_aux_sys_pll*/cmp_sys_pll*/CLKOUT0}]
-set fs1_ref_clk_period                           [get_property PERIOD [get_clocks fs1_ref_clk]]
-
-create_generated_clock -name fs2_ref_clk         [get_pins -hier -filter {NAME =~ *cmp_afc_base/*cmp_aux_sys_pll*/cmp_sys_pll*/CLKOUT0}]
-set fs2_ref_clk_period                           [get_property PERIOD [get_clocks fs2_ref_clk]]
+# For now, we are just using the "clk_aux" related constraints directly
+#
+#create_generated_clock -name fs1_ref_clk         [get_pins -hier -filter {NAME =~ *cmp_afc_base/*cmp_aux_sys_pll*/cmp_sys_pll*/CLKOUT0}]
+#set fs1_ref_clk_period                           [get_property PERIOD [get_clocks fs1_ref_clk]]
+#
+#create_generated_clock -name fs2_ref_clk         [get_pins -hier -filter {NAME =~ *cmp_afc_base/*cmp_aux_sys_pll*/cmp_sys_pll*/CLKOUT0}]
+#set fs2_ref_clk_period                           [get_property PERIOD [get_clocks fs2_ref_clk]]
 
 #######################################################################
 ##                              CDC                                  ##
 #######################################################################
 
 # From Wishbone To ADC. These are slow control registers taken care of synched by FFs.
-set_max_delay -datapath_only -from               [get_clocks clk_sys] -to [get_clocks fs1_ref_clk]    $clk_sys_period
-set_max_delay -datapath_only -from               [get_clocks clk_sys] -to [get_clocks fs2_ref_clk]    $clk_sys_period
+set_max_delay -datapath_only -from               [get_clocks clk_sys] -to [get_clocks clk_aux]    $clk_sys_period
+set_max_delay -datapath_only -from               [get_clocks clk_sys] -to [get_clocks clk_aux]    $clk_sys_period
 
 # From ADC/ADC To Wishbone. These are status registers taken care of synched by FFs.
-set_max_delay -datapath_only -from               [get_clocks fs1_ref_clk]    -to [get_clocks clk_sys] $fs1_ref_clk_period
-set_max_delay -datapath_only -from               [get_clocks fs2_ref_clk]    -to [get_clocks clk_sys] $fs2_ref_clk_period
+set_max_delay -datapath_only -from               [get_clocks clk_aux]    -to [get_clocks clk_sys] $clk_aux_period
+set_max_delay -datapath_only -from               [get_clocks clk_aux]    -to [get_clocks clk_sys] $clk_aux_period
 
 # FIFO CDC timimng. Using < faster clock period
-set_max_delay -datapath_only -from               [get_clocks clk_pll_i]   -to [get_clocks fs1_ref_clk]   $clk_pll_ddr_period_less
-set_max_delay -datapath_only -from               [get_clocks fs1_ref_clk] -to [get_clocks clk_pll_i]      $clk_pll_ddr_period_less
+set_max_delay -datapath_only -from               [get_clocks clk_pll_i]   -to [get_clocks clk_aux]   $clk_pll_ddr_period_less
+set_max_delay -datapath_only -from               [get_clocks clk_aux] -to [get_clocks clk_pll_i]      $clk_pll_ddr_period_less
 
-set_max_delay -datapath_only -from               [get_clocks clk_pll_i]   -to [get_clocks fs2_ref_clk]   $clk_pll_ddr_period_less
-set_max_delay -datapath_only -from               [get_clocks fs2_ref_clk] -to [get_clocks clk_pll_i]      $clk_pll_ddr_period_less
+set_max_delay -datapath_only -from               [get_clocks clk_pll_i]   -to [get_clocks clk_aux]   $clk_pll_ddr_period_less
+set_max_delay -datapath_only -from               [get_clocks clk_aux] -to [get_clocks clk_pll_i]      $clk_pll_ddr_period_less
 
 # FIFO generated CDC. Xilinx recommends 2x the slower clock period delay. But let's be more strict and allow
 # only 1x faster clock period delay
@@ -75,8 +77,8 @@ set_max_delay -datapath_only -from               [get_pins -hier -filter {NAME =
 # is activated many many miliseconds after all of the other. So, give it 2x the clock
 # period
 set_max_delay -datapath_only -from [get_pins -hier -filter {NAME =~ *afc_base/*acq_core/*/regs_o_reg[acq_chan_ctl_which_o][*]/C}] -to [get_pins -hier -filter {NAME =~ *afc_base/*acq_core/*/acq_in_post_trig_reg/D}] 8.000
-set_max_delay -datapath_only -from [get_pins -hier -filter {NAME =~ *afc_base/*acq_core/*/regs_o_reg[acq_chan_ctl_which_o][*]/C}] -to [get_clocks fs1_ref_clk] 8.000
-set_max_delay -datapath_only -from [get_pins -hier -filter {NAME =~ *afc_base/*acq_core/*/regs_o_reg[acq_chan_ctl_which_o][*]/C}] -to [get_clocks fs2_ref_clk] 8.000
+set_max_delay -datapath_only -from [get_pins -hier -filter {NAME =~ *afc_base/*acq_core/*/regs_o_reg[acq_chan_ctl_which_o][*]/C}] -to [get_clocks clk_aux] 8.000
+set_max_delay -datapath_only -from [get_pins -hier -filter {NAME =~ *afc_base/*acq_core/*/regs_o_reg[acq_chan_ctl_which_o][*]/C}] -to [get_clocks clk_aux] 8.000
 
 # This path is only valid after acq_start
 # signal, which is controlled by software and
