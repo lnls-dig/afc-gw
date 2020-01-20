@@ -21,11 +21,11 @@
 #######################################################################
 
 # ADC generated clocks
-create_generated_clock -name fs1_ref_clk          [get_nets -hier -filter {NAME =~ *fs1_clk*}]
-set fs1_ref_clk_period                            [get_property PERIOD [get_clocks fs1_ref_clk]]
+create_generated_clock -name fs1_ref_clk         [get_pins -hier -filter {NAME =~ *cmp_afc_base/*cmp_aux_sys_pll*/cmp_sys_pll*/CLKOUT0}]
+set fs1_ref_clk_period                           [get_property PERIOD [get_clocks fs1_ref_clk]]
 
-create_generated_clock -name fs2_ref_clk          [get_pins -hier -filter {NAME =~ *fs2_clk*}]
-set fs2_ref_clk_period                            [get_property PERIOD [get_clocks fs2_ref_clk]]
+create_generated_clock -name fs2_ref_clk         [get_pins -hier -filter {NAME =~ *cmp_afc_base/*cmp_aux_sys_pll*/cmp_sys_pll*/CLKOUT0}]
+set fs2_ref_clk_period                           [get_property PERIOD [get_clocks fs2_ref_clk]]
 
 #######################################################################
 ##                              CDC                                  ##
