@@ -665,8 +665,8 @@ begin
   ----------------------------------------------------------------------
   --                          Trigger                                 --
   ----------------------------------------------------------------------
-  trig_ref_clk <= clk_aux;
-  trig_ref_rst_n <= clk_aux_rstn;
+  trig_ref_clk <= clk_trig_ref;
+  trig_ref_rst_n <= clk_trig_ref_rstn;
 
   cmp_xwb_trigger : xwb_trigger
     generic map (
