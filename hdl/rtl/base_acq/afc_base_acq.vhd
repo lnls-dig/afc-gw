@@ -276,20 +276,20 @@ architecture top of afc_base_acq is
     c_int_sdb_infra_cores_id  => f_sdb_embed_synthesis(c_sdb_infra_cores_syn_info)
   );
 
+  -- User SDB
+  constant c_layout_user_cores_raw : t_sdb_record_array(g_USER_NUM_CORES downto 0) := f_build_auto_device_array(g_USER_SDB_DEVICE_ARRAY, c_slv_user_ids'length);
+
   -- Acquisition SDB
   constant c_layout_acq_cores_raw : t_sdb_record_array(g_ACQ_NUM_CORES downto 0) := f_build_auto_device_array(c_xwb_acq_core_sdb, c_slv_acq_core_ids'length);
 
   -- Trigger Mux SDB
   constant c_layout_trig_mux_cores_raw : t_sdb_record_array(g_TRIG_MUX_NUM_CORES downto 0) := f_build_auto_device_array(c_xwb_trigger_mux_sdb, c_slv_trig_mux_ids'length);
 
-  -- User SDB
-  constant c_layout_user_cores_raw : t_sdb_record_array(g_USER_NUM_CORES downto 0) := f_build_auto_device_array(g_USER_SDB_DEVICE_ARRAY, c_slv_user_ids'length);
-
   -- Raw layout
   constant c_layout_raw                      : t_sdb_record_array := c_layout_meta_raw &
+                                                                     c_layout_user_cores_raw &
                                                                      c_layout_trig_mux_cores_raw &
-                                                                     c_layout_acq_cores_raw &
-                                                                     c_layout_user_cores_raw;
+                                                                     c_layout_acq_cores_raw;
   constant c_layout                          : t_sdb_record_array := f_sdb_auto_layout(c_layout_raw);
   -- Self Describing Bus ROM Address. It will be an addressed slave as well.
   constant c_sdb_address                     : t_wishbone_address := f_sdb_auto_sdb   (c_layout_raw);
