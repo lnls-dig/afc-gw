@@ -27,6 +27,9 @@ syn_properties = [
 
 board = "afc"
 
+# For appending  the afc_acq.xdc to synthesis
+afc_base_xdc = ['acq']
+
 import os
 import sys
 if os.path.isfile("synthesis_descriptor_pkg.vhd"):

@@ -1,6 +1,5 @@
 files = [
-    "afc_acq.vhd",
-    "afc_acq.xdc"
+    "afc_acq.vhd"
 ]
 
 modules = {
