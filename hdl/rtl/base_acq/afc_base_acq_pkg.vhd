@@ -268,7 +268,7 @@ package body afc_base_acq_pkg is
     end if;
 
     -- Last one is the placeholder
-    res(res'high) := f_sdb_auto_device(c_DUMMY_SDB_DEVICE,  false);
+    res(res'left) := f_sdb_auto_device(c_DUMMY_SDB_DEVICE,  false);
 
     return res;
   end f_build_auto_device_array;
@@ -287,7 +287,7 @@ package body afc_base_acq_pkg is
     end if;
 
     -- Last one is the placeholder
-    res(res'high) := f_sdb_auto_device(c_DUMMY_SDB_DEVICE,  false);
+    res(res'left) := f_sdb_auto_device(c_DUMMY_SDB_DEVICE,  false);
 
     return res;
   end f_build_auto_device_array;
