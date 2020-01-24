@@ -8,6 +8,8 @@ use work.wishbone_pkg.all;
 use work.ipcores_pkg.all;
 -- Trigger Common Modules
 use work.trigger_common_pkg.all;
+-- AXI cores
+use work.pcie_cntr_axi_pkg.all;
 
 package afc_base_pkg is
 
@@ -176,8 +178,21 @@ package afc_base_pkg is
     clk_pcie_o                               : out std_logic;
     rst_pcie_n_o                             : out std_logic;
 
+    clk_trig_ref_o                           : out std_logic;
+    rst_trig_ref_n_o                         : out std_logic;
+
     --  Interrupts
     irq_user_i                               : in std_logic_vector(g_NUM_USER_IRQ + 5 downto 6) := (others => '0');
+
+    -- DDR memory controller interface --
+    ddr_aximm_sl_aclk_o                      : out std_logic;
+    ddr_aximm_sl_aresetn_o                   : out std_logic;
+    -- AXIMM Read Channel
+    ddr_aximm_r_sl_i                         : in t_aximm_r_slave_in := cc_dummy_aximm_r_slave_in;
+    ddr_aximm_r_sl_o                         : out t_aximm_r_slave_out;
+    -- AXIMM Write Channel
+    ddr_aximm_w_sl_i                         : in t_aximm_w_slave_in := cc_dummy_aximm_w_slave_in;
+    ddr_aximm_w_sl_o                         : out t_aximm_w_slave_out;
 
     -- Trigger
     trig_out_o                               : out t_trig_channel_array(c_NUM_TRIG-1 downto 0);

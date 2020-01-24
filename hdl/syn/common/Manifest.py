@@ -15,3 +15,13 @@ files = [ "afc_base_common.xcf",
           "afc_base_common_gen.xdc"
          ];
 
+# Generic part for appending .xdc files to synthesis
+xdc_dict = {
+            'acq':     "afc_base_acq.xdc",
+           }
+
+if afc_base_xdc is not None:
+    for p in afc_base_xdc:
+        f = xdc_dict.get(p, None)
+        assert f is not None, "unknown name {} in 'afc_base_xdc'".format(p)
+        files.append(f)

@@ -193,8 +193,21 @@ port (
   clk_pcie_o                               : out std_logic;
   rst_pcie_n_o                             : out std_logic;
 
+  clk_trig_ref_o                           : out std_logic;
+  rst_trig_ref_n_o                         : out std_logic;
+
   --  Interrupts
   irq_user_i                               : in std_logic_vector(g_NUM_USER_IRQ + 5 downto 6) := (others => '0');
+
+  -- DDR memory controller interface --
+  ddr_aximm_sl_aclk_o                      : out std_logic;
+  ddr_aximm_sl_aresetn_o                   : out std_logic;
+  -- AXIMM Read Channel
+  ddr_aximm_r_sl_i                         : in t_aximm_r_slave_in := cc_dummy_aximm_r_slave_in;
+  ddr_aximm_r_sl_o                         : out t_aximm_r_slave_out;
+  -- AXIMM Write Channel
+  ddr_aximm_w_sl_i                         : in t_aximm_w_slave_in := cc_dummy_aximm_w_slave_in;
+  ddr_aximm_w_sl_o                         : out t_aximm_w_slave_out;
 
   -- Trigger
   trig_out_o                               : out t_trig_channel_array(c_NUM_TRIG-1 downto 0);
@@ -721,43 +734,51 @@ begin
 
   cmp_xwb_pcie_cntr : xwb_pcie_cntr
   generic map (
-    g_ma_interface_mode                       => PIPELINED,
-    g_ma_address_granularity                  => BYTE,
-    g_simulation                              => "FALSE"
+    g_ma_interface_mode                      => PIPELINED,
+    g_ma_address_granularity                 => BYTE,
+    g_simulation                             => "FALSE"
   )
   port map (
     -- DDR3 memory pins
-    ddr3_dq_b                                 => ddr3_dq_b,
-    ddr3_dqs_p_b                              => ddr3_dqs_p_b,
-    ddr3_dqs_n_b                              => ddr3_dqs_n_b,
-    ddr3_addr_o                               => ddr3_addr_o,
-    ddr3_ba_o                                 => ddr3_ba_o,
-    ddr3_cs_n_o                               => ddr3_cs_n_o,
-    ddr3_ras_n_o                              => ddr3_ras_n_o,
-    ddr3_cas_n_o                              => ddr3_cas_n_o,
-    ddr3_we_n_o                               => ddr3_we_n_o,
-    ddr3_reset_n_o                            => ddr3_reset_n_o,
-    ddr3_ck_p_o                               => ddr3_ck_p_o,
-    ddr3_ck_n_o                               => ddr3_ck_n_o,
-    ddr3_cke_o                                => ddr3_cke_o,
-    ddr3_dm_o                                 => ddr3_dm_o,
-    ddr3_odt_o                                => ddr3_odt_o,
+    ddr3_dq_b                                => ddr3_dq_b,
+    ddr3_dqs_p_b                             => ddr3_dqs_p_b,
+    ddr3_dqs_n_b                             => ddr3_dqs_n_b,
+    ddr3_addr_o                              => ddr3_addr_o,
+    ddr3_ba_o                                => ddr3_ba_o,
+    ddr3_cs_n_o                              => ddr3_cs_n_o,
+    ddr3_ras_n_o                             => ddr3_ras_n_o,
+    ddr3_cas_n_o                             => ddr3_cas_n_o,
+    ddr3_we_n_o                              => ddr3_we_n_o,
+    ddr3_reset_n_o                           => ddr3_reset_n_o,
+    ddr3_ck_p_o                              => ddr3_ck_p_o,
+    ddr3_ck_n_o                              => ddr3_ck_n_o,
+    ddr3_cke_o                               => ddr3_cke_o,
+    ddr3_dm_o                                => ddr3_dm_o,
+    ddr3_odt_o                               => ddr3_odt_o,
 
     -- PCIe transceivers
-    pci_exp_rxp_i                             => pci_exp_rxp_i,
-    pci_exp_rxn_i                             => pci_exp_rxn_i,
-    pci_exp_txp_o                             => pci_exp_txp_o,
-    pci_exp_txn_o                             => pci_exp_txn_o,
+    pci_exp_rxp_i                            => pci_exp_rxp_i,
+    pci_exp_rxn_i                            => pci_exp_rxn_i,
+    pci_exp_txp_o                            => pci_exp_txp_o,
+    pci_exp_txn_o                            => pci_exp_txn_o,
 
     -- Necessity signals
-    ddr_clk_i                                 => clk_200mhz,        --200 MHz DDR core clock (connect through BUFG or PLL)
-    ddr_rst_i                                 => clk_200mhz_rst,
-    pcie_clk_p_i                              => pcie_clk_p_i,      --100 MHz PCIe Clock (connect directly to input pin)
-    pcie_clk_n_i                              => pcie_clk_n_i,      --100 MHz PCIe Clock
-    pcie_rst_n_i                              => clk_sys_pcie_rstn, -- PCIe core reset
+    ddr_clk_i                                => clk_200mhz,        --200 MHz DDR core clock (connect through BUFG or PLL)
+    ddr_rst_i                                => clk_200mhz_rst,
+    pcie_clk_p_i                             => pcie_clk_p_i,      --100 MHz PCIe Clock (connect directly to input pin)
+    pcie_clk_n_i                             => pcie_clk_n_i,      --100 MHz PCIe Clock
+    pcie_rst_n_i                             => clk_sys_pcie_rstn, -- PCIe core reset
+
+    -- DDR memory controller interface --
+    ddr_aximm_sl_aclk_o                      => ddr_aximm_sl_aclk_o,
+    ddr_aximm_sl_aresetn_o                   => ddr_aximm_sl_aresetn_o,
+    ddr_aximm_r_sl_i                         => ddr_aximm_r_sl_i,
+    ddr_aximm_r_sl_o                         => ddr_aximm_r_sl_o,
+    ddr_aximm_w_sl_i                         => ddr_aximm_w_sl_i,
+    ddr_aximm_w_sl_o                         => ddr_aximm_w_sl_o,
 
     -- Wishbone interface --
-    wb_clk_i                                  => clk_sys,
+    wb_clk_i                                 => clk_sys,
     -- Reset wishbone interface with the same reset as the other
     -- modules, including a reset coming from the PCIe itself.
     wb_rst_i                                 => clk_sys_rst,
@@ -1207,6 +1228,9 @@ begin
     trig_ref_rstn <= clk_sys_rstn;
 
   end generate;
+
+  clk_trig_ref_o <= trig_ref_clk;
+  rst_trig_ref_n_o <= trig_ref_rstn;
 
   gen_with_trigger: if g_WITH_TRIGGER generate
 
