@@ -70,7 +70,7 @@ generic (
   g_TRIG_MUX_WITH_INPUT_SYNC                 : boolean := true;
   g_TRIG_MUX_WITH_OUTPUT_SYNC                : boolean := true;
   -- User generic. Must be g_USER_NUM_CORES length
-  g_USER_SDB_DEVICE_ARRAY                    : t_sdb_device_array := c_DUMMY_SDB_DEVICE_ARRAY;
+  g_USER_SDB_RECORD_ARRAY                    : t_sdb_device_array := c_DUMMY_SDB_RECORD_ARRAY;
   -- Auxiliary clock used to sync incoming triggers in the trigger module.
   -- If false, trigger will be synch'ed with clk_sys
   g_WITH_AUX_CLK                             : boolean := true;
@@ -277,7 +277,9 @@ architecture top of afc_base_acq is
   );
 
   -- User SDB
-  constant c_layout_user_cores_raw : t_sdb_record_array(g_USER_NUM_CORES downto 0) := f_build_auto_device_array(g_USER_SDB_DEVICE_ARRAY, c_slv_user_ids'length);
+  constant c_layout_user_cores_raw : t_sdb_record_array(g_USER_NUM_CORES downto 0) :=
+    f_sdb_auto_device(c_DUMMY_SDB_DEVICE,  false) &
+    g_USER_SDB_RECORD_ARRAY;
 
   -- Acquisition SDB
   constant c_layout_acq_cores_raw : t_sdb_record_array(g_ACQ_NUM_CORES downto 0) := f_build_auto_device_array(c_xwb_acq_core_sdb, c_slv_acq_core_ids'length);

@@ -28,9 +28,9 @@ package afc_base_acq_pkg is
   -- Constants
   --------------------------------------------------------------------
 
-  constant c_DUMMY_SDB_DEVICE_ARRAY : t_sdb_device_array(0 downto 0) :=
+  constant c_DUMMY_SDB_RECORD_ARRAY : t_sdb_recor_array(0 downto 0) :=
   (
-    0 => cc_dummy_sdb_device
+    0 => f_sdb_auto_device(cc_dummy_sdb_device, false)
   );
 
   --------------------------------------------------------------------
@@ -74,7 +74,7 @@ package afc_base_acq_pkg is
     g_TRIG_MUX_WITH_INPUT_SYNC                 : boolean := true;
     g_TRIG_MUX_WITH_OUTPUT_SYNC                : boolean := true;
     -- User generic. Must be g_USER_NUM_CORES length
-    g_USER_SDB_DEVICE_ARRAY                    : t_sdb_device_array := c_DUMMY_SDB_DEVICE_ARRAY;
+    g_USER_SDB_RECORD_ARRAY                    : t_sdb_device_array := c_DUMMY_SDB_RECORD_ARRAY;
     -- Auxiliary clock used to sync incoming triggers in the trigger module.
     -- If false, trigger will be synch'ed with clk_sys
     g_WITH_AUX_CLK                             : boolean := true;
