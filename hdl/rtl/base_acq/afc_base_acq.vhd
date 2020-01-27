@@ -70,7 +70,7 @@ generic (
   g_TRIG_MUX_WITH_INPUT_SYNC                 : boolean := true;
   g_TRIG_MUX_WITH_OUTPUT_SYNC                : boolean := true;
   -- User generic. Must be g_USER_NUM_CORES length
-  g_USER_SDB_RECORD_ARRAY                    : t_sdb_device_array := c_DUMMY_SDB_RECORD_ARRAY;
+  g_USER_SDB_RECORD_ARRAY                    : t_sdb_record_array := c_DUMMY_SDB_RECORD_ARRAY;
   -- Auxiliary clock used to sync incoming triggers in the trigger module.
   -- If false, trigger will be synch'ed with clk_sys
   g_WITH_AUX_CLK                             : boolean := true;
