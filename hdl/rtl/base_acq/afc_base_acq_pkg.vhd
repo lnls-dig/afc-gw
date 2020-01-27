@@ -28,7 +28,7 @@ package afc_base_acq_pkg is
   -- Constants
   --------------------------------------------------------------------
 
-  constant c_DUMMY_SDB_RECORD_ARRAY : t_sdb_recor_array(0 downto 0) :=
+  constant c_DUMMY_SDB_RECORD_ARRAY : t_sdb_record_array(0 downto 0) :=
   (
     0 => f_sdb_auto_device(cc_dummy_sdb_device, false)
   );
