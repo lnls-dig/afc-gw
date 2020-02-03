@@ -46,6 +46,11 @@ use work.pcie_cntr_axi_pkg.all;
 
 entity afc_base_acq is
 generic (
+  -- system PLL parameters
+  g_DIVCLK_DIVIDE                            : integer := 5;
+  g_CLKBOUT_MULT_F                           : integer := 48;
+  g_CLK0_DIVIDE_F                            : integer := 12;
+  g_CLK1_DIVIDE                              : integer := 6;
   --  If true, instantiate a VIC/UART/DIAG/SPI.
   g_WITH_VIC                                 : boolean := true;
   g_WITH_UART_MASTER                         : boolean := true;
@@ -355,6 +360,11 @@ begin
 
   cmp_afc_base : afc_base
     generic map (
+      -- system PLL parameters
+      g_DIVCLK_DIVIDE                          => g_DIVCLK_DIVIDE,
+      g_CLKBOUT_MULT_F                         => g_CLKBOUT_MULT_F,
+      g_CLK0_DIVIDE_F                          => g_CLK0_DIVIDE_F,
+      g_CLK1_DIVIDE                            => g_CLK1_DIVIDE,
       --  If true, instantiate a VIC/UART/DIAG/SPI.
       g_WITH_VIC                               => true,
       g_WITH_UART_MASTER                       => true,

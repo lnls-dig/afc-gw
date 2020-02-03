@@ -50,6 +50,11 @@ package afc_base_acq_pkg is
   --------------------------------------------------------------------
   component afc_base_acq
   generic (
+    -- system PLL parameters
+    g_DIVCLK_DIVIDE                            : integer := 5;
+    g_CLKBOUT_MULT_F                           : integer := 48;
+    g_CLK0_DIVIDE_F                            : integer := 12;
+    g_CLK1_DIVIDE                              : integer := 6;
     --  If true, instantiate a VIC/UART/DIAG/SPI.
     g_WITH_VIC                                 : boolean := true;
     g_WITH_UART_MASTER                         : boolean := true;
