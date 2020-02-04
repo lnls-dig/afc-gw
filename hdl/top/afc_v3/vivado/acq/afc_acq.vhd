@@ -322,7 +322,7 @@ begin
       g_TRIG_MUX_WITH_INPUT_SYNC               => c_trig_mux_with_input_sync,
       g_TRIG_MUX_WITH_OUTPUT_SYNC              => c_trig_mux_with_output_sync,
       -- User generic. Must be g_USER_NUM_CORES length
-      g_USER_SDB_DEVICE_ARRAY                  => c_DUMMY_SDB_DEVICE_ARRAY,
+      g_USER_SDB_RECORD_ARRAY                  => c_DUMMY_SDB_RECORD_ARRAY,
       -- Auxiliary clock used to sync incoming triggers in the trigger module.
       -- If false, trigger will be synch'ed with clk_sys
       g_WITH_AUX_CLK                           => true,

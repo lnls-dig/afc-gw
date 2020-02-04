@@ -28,9 +28,9 @@ package afc_base_acq_pkg is
   -- Constants
   --------------------------------------------------------------------
 
-  constant c_DUMMY_SDB_DEVICE_ARRAY : t_sdb_device_array(0 downto 0) :=
+  constant c_DUMMY_SDB_RECORD_ARRAY : t_sdb_record_array(0 downto 0) :=
   (
-    0 => cc_dummy_sdb_device
+    0 => f_sdb_auto_device(cc_dummy_sdb_device, false)
   );
 
   --------------------------------------------------------------------
@@ -50,6 +50,11 @@ package afc_base_acq_pkg is
   --------------------------------------------------------------------
   component afc_base_acq
   generic (
+    -- system PLL parameters
+    g_DIVCLK_DIVIDE                            : integer := 5;
+    g_CLKBOUT_MULT_F                           : integer := 48;
+    g_CLK0_DIVIDE_F                            : integer := 12;
+    g_CLK1_DIVIDE                              : integer := 6;
     --  If true, instantiate a VIC/UART/DIAG/SPI.
     g_WITH_VIC                                 : boolean := true;
     g_WITH_UART_MASTER                         : boolean := true;
@@ -74,7 +79,7 @@ package afc_base_acq_pkg is
     g_TRIG_MUX_WITH_INPUT_SYNC                 : boolean := true;
     g_TRIG_MUX_WITH_OUTPUT_SYNC                : boolean := true;
     -- User generic. Must be g_USER_NUM_CORES length
-    g_USER_SDB_DEVICE_ARRAY                    : t_sdb_device_array := c_DUMMY_SDB_DEVICE_ARRAY;
+    g_USER_SDB_RECORD_ARRAY                    : t_sdb_record_array := c_DUMMY_SDB_RECORD_ARRAY;
     -- Auxiliary clock used to sync incoming triggers in the trigger module.
     -- If false, trigger will be synch'ed with clk_sys
     g_WITH_AUX_CLK                             : boolean := true;

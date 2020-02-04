@@ -44,6 +44,11 @@ use work.afc_base_pkg.all;
 
 entity afc_base is
 generic (
+  -- system PLL parameters
+  g_DIVCLK_DIVIDE                          : integer := 5;
+  g_CLKBOUT_MULT_F                         : integer := 48;
+  g_CLK0_DIVIDE_F                          : integer := 12;
+  g_CLK1_DIVIDE                            : integer := 6;
   --  If true, instantiate a VIC/UART/DIAG/SPI.
   g_WITH_VIC                               : boolean := true;
   g_WITH_UART_MASTER                       : boolean := true;
@@ -569,15 +574,13 @@ begin
   generic map (
     -- 125 MHz input clock
     g_clkin_period                           => 8.000,
-    g_divclk_divide                          => 5,
-    g_clkbout_mult_f                         => 48,
+    g_divclk_divide                          => g_DIVCLK_DIVIDE,
+    g_clkbout_mult_f                         => g_CLKBOUT_MULT_F,
 
     -- 100 MHz output clock
-    g_clk0_divide_f                          => 12,
+    g_clk0_divide_f                          => g_CLK0_DIVIDE_F,
     -- 200 MHz output clock
-    g_clk1_divide                            => 6,
-    -- 300 MHz output clock
-    g_clk2_divide                            => 4
+    g_clk1_divide                            => g_CLK1_DIVIDE
   )
   port map (
     rst_i                                    => '0',
