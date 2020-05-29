@@ -1,4 +1,9 @@
-# AFC Gateware Examples
+# AFC Base Gateware
+
+This repository contains the AFC board support gateware
+with all the board funcionality exposed, such as PCIe, DDR,
+triggers, LEDs and UART, as well as some often used modules
+like acquistion engines and interrupt support.
 
 ## Project Folder Organization
 
