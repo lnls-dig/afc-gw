@@ -20,8 +20,12 @@ xdc_dict = {
             'acq':     "afc_base_acq.xdc",
            }
 
-if afc_base_xdc is not None:
-    for p in afc_base_xdc:
-        f = xdc_dict.get(p, None)
-        assert f is not None, "unknown name {} in 'afc_base_xdc'".format(p)
-        files.append(f)
+try:
+    if afc_base_xdc is not None:
+        for p in afc_base_xdc:
+            f = xdc_dict.get(p, None)
+            assert f is not None, "unknown name {} in 'afc_base_xdc'".format(p)
+            files.append(f)
+except NameError:
+    # Do nothing, as nothing needs to be added to the .xdc list
+    pass
