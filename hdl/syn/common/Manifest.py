@@ -6,26 +6,29 @@ filenames = [
     'ddr_core.xdc',
     'afc_base_common.xdc'
 ]
-with open('afc_base_common_gen.xdc', 'w') as outfile:
-    for fname in filenames:
-        with open(fname) as infile:
-            outfile.write(infile.read())
-
-files = [ "afc_base_common.xcf",
-          "afc_base_common_gen.xdc"
-         ];
 
 # Generic part for appending .xdc files to synthesis
 xdc_dict = {
-            'acq':     "afc_base_acq.xdc",
-           }
+    'acq':     "afc_base_acq.xdc",
+}
 
 try:
     if afc_base_xdc is not None:
         for p in afc_base_xdc:
             f = xdc_dict.get(p, None)
             assert f is not None, "unknown name {} in 'afc_base_xdc'".format(p)
-            files.append(f)
+            filenames.append(f)
 except NameError:
     # Do nothing, as nothing needs to be added to the .xdc list
     pass
+
+# Merge all .xdc files into one in order
+with open('afc_base_common_gen.xdc', 'w') as outfile:
+    for fname in filenames:
+        with open(fname) as infile:
+            outfile.write(infile.read())
+
+files = [
+    "afc_base_common.xcf",
+    "afc_base_common_gen.xdc"
+];
