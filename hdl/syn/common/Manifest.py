@@ -22,6 +22,16 @@ except NameError:
     # Do nothing, as nothing needs to be added to the .xdc list
     pass
 
+# Additional pass for custom user files, if any
+try:
+    if additional_xdc is not None:
+        for f in additional_xdc:
+            filenames.append(f)
+            print("Additional .xdc files being merged: {}".format(f))
+except NameError:
+    # Do nothing, as nothing needs to be added to the .xdc list
+    pass
+
 # Merge all .xdc files into one in order
 afc_base_xdc_gen_name = "afc_base_common_gen.xdc"
 with open(afc_base_xdc_gen_name, 'w') as outfile:
