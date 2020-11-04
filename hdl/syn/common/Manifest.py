@@ -23,12 +23,14 @@ except NameError:
     pass
 
 # Merge all .xdc files into one in order
-with open('afc_base_common_gen.xdc', 'w') as outfile:
+afc_base_xdc_gen_name = "afc_base_common_gen.xdc"
+with open(afc_base_xdc_gen_name, 'w') as outfile:
     for fname in filenames:
         with open(fname) as infile:
             outfile.write(infile.read())
 
 files = [
     "afc_base_common.xcf",
-    "afc_base_common_gen.xdc"
 ];
+
+files.append(afc_base_xdc_gen_name)
