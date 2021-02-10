@@ -60,7 +60,7 @@ package afc_base_acq_pkg is
     g_WITH_UART_MASTER                         : boolean := true;
     g_WITH_DIAG                                : boolean := true;
     g_WITH_TRIGGER                             : boolean := true;
-    g_WITH_SPI                                 : boolean := true;
+    g_WITH_SPI                                 : boolean := false;
     g_WITH_BOARD_I2C                           : boolean := true;
     g_ACQ_NUM_CORES                            : natural := 2;
     g_TRIG_MUX_NUM_CORES                       : natural := 2;

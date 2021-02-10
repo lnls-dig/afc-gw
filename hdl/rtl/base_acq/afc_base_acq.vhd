@@ -56,7 +56,7 @@ generic (
   g_WITH_UART_MASTER                         : boolean := true;
   g_WITH_DIAG                                : boolean := true;
   g_WITH_TRIGGER                             : boolean := true;
-  g_WITH_SPI                                 : boolean := true;
+  g_WITH_SPI                                 : boolean := false;
   g_WITH_BOARD_I2C                           : boolean := true;
   g_ACQ_NUM_CORES                            : natural := 2;
   g_TRIG_MUX_NUM_CORES                       : natural := 2;
@@ -366,12 +366,15 @@ begin
       g_CLK0_DIVIDE_F                          => g_CLK0_DIVIDE_F,
       g_CLK1_DIVIDE                            => g_CLK1_DIVIDE,
       --  If true, instantiate a VIC/UART/DIAG/SPI.
-      g_WITH_VIC                               => true,
-      g_WITH_UART_MASTER                       => true,
-      g_WITH_DIAG                              => true,
-      g_WITH_TRIGGER                           => true,
-      g_WITH_SPI                               => false,
-      g_WITH_BOARD_I2C                         => true,
+      g_WITH_VIC                               => g_WITH_VIC,
+      g_WITH_UART_MASTER                       => g_WITH_UART_MASTER,
+      g_WITH_DIAG                              => g_WITH_DIAG,
+      g_WITH_TRIGGER                           => g_WITH_TRIGGER,
+      g_WITH_SPI                               => g_WITH_SPI,
+      g_WITH_BOARD_I2C                         => g_WITH_BOARD_I2C,
+      -- Auxiliary clock used to sync incoming triggers in the trigger module.
+      -- If false, trigger will be synch'ed with clk_sys
+      g_WITH_AUX_CLK                           => g_WITH_AUX_CLK,
       -- Number of user interrupts
       g_NUM_USER_IRQ                           => g_NUM_USER_IRQ,
       -- Bridge SDB record of the application meta-data. If false, no address is
