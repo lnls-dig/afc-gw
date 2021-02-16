@@ -15,6 +15,11 @@ set_property PACKAGE_PIN AG16 [get_ports aux_clk_p_i]
 # FP2_CLK1_C_N
 set_property PACKAGE_PIN AH16 [get_ports aux_clk_n_i]
 
+# LINK01_CLK1_P
+set_property PACKAGE_PIN AG18 [get_ports afc_link01_clk_p_i]
+# LINK01_CLK1_N
+set_property PACKAGE_PIN AH18 [get_ports afc_link01_clk_n_i]
+
 # TXD		IO_25_34
 set_property PACKAGE_PIN AB11 [get_ports uart_txd_o]
 set_property IOSTANDARD LVCMOS25 [get_ports uart_txd_o]
@@ -131,6 +136,19 @@ set_property IOSTANDARD LVCMOS25 [get_ports diag_spi_clk_i]
 set_property PACKAGE_PIN U24 [get_ports adn4604_vadj2_clk_updt_n_o]
 set_property IOSTANDARD LVCMOS25 [get_ports adn4604_vadj2_clk_updt_n_o]
 set_property PULLUP true [get_ports adn4604_vadj2_clk_updt_n_o]
+
+#######################################################################
+##                        AFC SI57x Contraints                       ##
+#######################################################################
+
+set_property PACKAGE_PIN V24 [get_ports afc_si57x_scl_b]
+set_property IOSTANDARD LVCMOS25 [get_ports afc_si57x_scl_b]
+
+set_property PACKAGE_PIN W24 [get_ports afc_si57x_sda_b]
+set_property IOSTANDARD LVCMOS25 [get_ports afc_si57x_sda_b]
+
+set_property PACKAGE_PIN AD23 [get_ports afc_si57x_oe_o]
+set_property IOSTANDARD LVCMOS25 [get_ports afc_si57x_oe_o]
 
 #######################################################################
 ##                      FMC Connector HPC1                           ##

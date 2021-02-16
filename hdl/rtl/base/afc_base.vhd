@@ -29,6 +29,8 @@ use work.gencores_pkg.all;
 use work.ifc_wishbone_pkg.all;
 -- Custom common cores
 use work.ifc_common_pkg.all;
+-- Custom generic cores
+use work.ifc_generic_pkg.all;
 -- Trigger definitions
 use work.trigger_common_pkg.all;
 -- Genrams
@@ -49,12 +51,22 @@ generic (
   g_CLKBOUT_MULT_F                         : integer := 48;
   g_CLK0_DIVIDE_F                          : integer := 12;
   g_CLK1_DIVIDE                            : integer := 6;
+  g_SYS_CLOCK_FREQ                         : integer := 100000000;
+  -- AFC Si57x parameters
+  g_AFC_SI57x_I2C_FREQ                     : integer := 400000;
+  -- Whether or not to initialize oscilator with the specified values
+  g_AFC_SI57x_INIT_OSC                     : boolean := true;
+  -- Init Oscillator values
+  g_AFC_SI57x_INIT_RFREQ_VALUE             : std_logic_vector(37 downto 0) := "00" & x"3017a66ad";
+  g_AFC_SI57x_INIT_N1_VALUE                : std_logic_vector(6 downto 0) := "0000011";
+  g_AFC_SI57x_INIT_HS_VALUE                : std_logic_vector(2 downto 0) := "111";
   --  If true, instantiate a VIC/UART/DIAG/SPI.
   g_WITH_VIC                               : boolean := true;
   g_WITH_UART_MASTER                       : boolean := true;
   g_WITH_DIAG                              : boolean := true;
   g_WITH_TRIGGER                           : boolean := true;
   g_WITH_SPI                               : boolean := true;
+  g_WITH_AFC_SI57x                         : boolean := true;
   g_WITH_BOARD_I2C                         : boolean := true;
   -- Auxiliary clock used to sync incoming triggers in the trigger module.
   -- If false, trigger will be synch'ed with clk_sys
@@ -75,6 +87,10 @@ port (
 
   aux_clk_p_i                              : in std_logic := '0';
   aux_clk_n_i                              : in std_logic := '1';
+
+  -- LINK01 clock. From clock switch
+  afc_link01_clk_p_i                       : in std_logic := '0';
+  afc_link01_clk_n_i                       : in std_logic := '1';
 
   ---------------------------------------------------------------------------
   -- Reset Button
@@ -107,6 +123,16 @@ port (
   -- ADN4604ASVZ
   ---------------------------------------------------------------------------
   adn4604_vadj2_clk_updt_n_o               : out std_logic;
+
+  ---------------------------------------------------------------------------
+  -- AFC I2C.
+  ---------------------------------------------------------------------------
+  -- Si57x oscillator
+  afc_si57x_scl_b                          : inout std_logic;
+  afc_si57x_sda_b                          : inout std_logic;
+
+  -- Si57x oscillator output enable
+  afc_si57x_oe_o                           : out   std_logic;
 
   ---------------------------------------------------------------------------
   -- PCIe pins
@@ -201,6 +227,9 @@ port (
   clk_trig_ref_o                           : out std_logic;
   rst_trig_ref_n_o                         : out std_logic;
 
+  clk_link01_p_o                           : out std_logic;
+  clk_link01_n_o                           : out std_logic;
+
   --  Interrupts
   irq_user_i                               : in std_logic_vector(g_NUM_USER_IRQ + 5 downto 6) := (others => '0');
 
@@ -221,6 +250,16 @@ port (
   trig_dbg_o                               : out std_logic_vector(c_NUM_TRIG-1 downto 0);
   trig_dbg_data_sync_o                     : out std_logic_vector(c_NUM_TRIG-1 downto 0);
   trig_dbg_data_degliteched_o              : out std_logic_vector(c_NUM_TRIG-1 downto 0);
+
+  -- AFC Si57x
+  afc_si57x_ext_wr_i                       : in  std_logic := '0';
+  afc_si57x_ext_rfreq_value_i              : in  std_logic_vector(37 downto 0) := (others => '0');
+  afc_si57x_ext_n1_value_i                 : in  std_logic_vector(6 downto 0) := (others => '0');
+  afc_si57x_ext_hs_value_i                 : in  std_logic_vector(2 downto 0) := (others => '0');
+  afc_si57x_sta_reconfig_done_o            : out std_logic;
+
+  afc_si57x_oe_i                           : in std_logic := '1';
+  afc_si57x_addr_i                         : in std_logic_vector(7 downto 0) := "10101010";
 
   --  The wishbone bus from the pcie/host to the application
   --  LSB addresses are not available (used by the carrier).
@@ -504,8 +543,12 @@ architecture top of afc_base is
   signal irqs                                : std_logic_vector(num_interrupts - 1 downto 0);
 
   -- Trigger
-  signal trig_ref_clk                       : std_logic;
-  signal trig_ref_rstn                      : std_logic;
+  signal trig_ref_clk                        : std_logic;
+  signal trig_ref_rstn                       : std_logic;
+
+  -- AFC Si57x signals
+  signal afc_si57x_scl_pad_oen               : std_logic;
+  signal afc_si57x_sda_pad_oen               : std_logic;
 
   ---------------------------
   --      Components       --
@@ -728,6 +771,13 @@ begin
   -- Output assignments
   clk_aux_o                                  <= clk_aux;
   rst_aux_n_o                                <= clk_aux_rstn;
+
+  -----------------------------------------------------------------------------
+  -- LINK01 clock
+  -----------------------------------------------------------------------------
+
+  clk_link01_p_o                             <= afc_link01_clk_p_i;
+  clk_link01_n_o                             <= afc_link01_clk_n_i;
 
   -----------------------------------------------------------------------------
   -- PCIe Core
@@ -1279,6 +1329,71 @@ begin
   gen_without_trigger : if not g_WITH_TRIGGER generate
 
     cbar_dev_bus_master_in(c_dev_slv_trig_iface_id) <= c_DUMMY_WB_MASTER_IN;
+
+  end generate;
+
+  ----------------------------------------------------------------------
+  -- AFC Si57x
+  ----------------------------------------------------------------------
+
+  gen_with_afc_si57x: if g_WITH_AFC_SI57x generate
+
+    cmp_afc_si57x_interface : si57x_interface
+    generic map (
+      g_SYS_CLOCK_FREQ                           => g_SYS_CLOCK_FREQ,
+      g_I2C_FREQ                                 => g_AFC_SI57x_I2C_FREQ,
+      g_INIT_OSC                                 => g_AFC_SI57x_INIT_OSC,
+      g_INIT_RFREQ_VALUE                         => g_AFC_SI57x_INIT_RFREQ_VALUE,
+      g_INIT_N1_VALUE                            => g_AFC_SI57x_INIT_N1_VALUE,
+      g_INIT_HS_VALUE                            => g_AFC_SI57x_INIT_HS_VALUE
+    )
+    port map (
+      ---------------------------------------------------------------------------
+      -- clock and reset interface
+      ---------------------------------------------------------------------------
+      clk_sys_i                                  => clk_sys,
+      rst_n_i                                    => clk_sys_rstn,
+
+      ---------------------------------------------------------------------------
+      -- Optional external RFFREQ interface
+      ---------------------------------------------------------------------------
+      ext_wr_i                                   => afc_si57x_ext_wr_i,
+      ext_rfreq_value_i                          => afc_si57x_ext_rfreq_value_i,
+      ext_n1_value_i                             => afc_si57x_ext_n1_value_i,
+      ext_hs_value_i                             => afc_si57x_ext_hs_value_i,
+
+      ---------------------------------------------------------------------------
+      -- Status pins
+      ---------------------------------------------------------------------------
+      sta_reconfig_done_o                        => afc_si57x_sta_reconfig_done_o,
+
+      ---------------------------------------------------------------------------
+      -- I2C bus: output enable (active low)
+      ---------------------------------------------------------------------------
+      scl_pad_oen_o                              => afc_si57x_scl_pad_oen,
+      sda_pad_oen_o                              => afc_si57x_sda_pad_oen,
+
+      ---------------------------------------------------------------------------
+      -- SI57x pins
+      ---------------------------------------------------------------------------
+      -- Optional OE control
+      si57x_oe_i                                 => afc_si57x_oe_i,
+      si57x_addr_i                               => afc_si57x_addr_i,
+      si57x_oe_o                                 => afc_si57x_oe_o
+    );
+
+    -- No input reading
+    afc_si57x_scl_b <= '0' when afc_si57x_scl_pad_oen = '0' else 'Z';
+    afc_si57x_sda_b <= '0' when afc_si57x_sda_pad_oen = '0' else 'Z';
+
+  end generate;
+
+  gen_without_afc_si57x: if not g_WITH_AFC_SI57x generate
+
+    afc_si57x_sta_reconfig_done_o <= '0';
+    afc_si57x_oe_o <= '0';
+    afc_si57x_scl_b <= 'Z';
+    afc_si57x_sda_b <= 'Z';
 
   end generate;
 
