@@ -51,12 +51,22 @@ generic (
   g_CLKBOUT_MULT_F                           : integer := 48;
   g_CLK0_DIVIDE_F                            : integer := 12;
   g_CLK1_DIVIDE                              : integer := 6;
+  g_SYS_CLOCK_FREQ                           : integer := 100000000;
+  -- AFC Si57x parameters
+  g_AFC_SI57x_I2C_FREQ                       : integer := 400000;
+  -- Whether or not to initialize oscilator with the specified values
+  g_AFC_SI57x_INIT_OSC                       : boolean := true;
+  -- Init Oscillator values
+  g_AFC_SI57x_INIT_RFREQ_VALUE               : std_logic_vector(37 downto 0) := "00" & x"3017a66ad";
+  g_AFC_SI57x_INIT_N1_VALUE                  : std_logic_vector(6 downto 0) := "0000011";
+  g_AFC_SI57x_INIT_HS_VALUE                  : std_logic_vector(2 downto 0) := "111";
   --  If true, instantiate a VIC/UART/DIAG/SPI.
   g_WITH_VIC                                 : boolean := true;
   g_WITH_UART_MASTER                         : boolean := true;
   g_WITH_DIAG                                : boolean := true;
   g_WITH_TRIGGER                             : boolean := true;
   g_WITH_SPI                                 : boolean := false;
+  g_WITH_AFC_SI57x                           : boolean := true;
   g_WITH_BOARD_I2C                           : boolean := true;
   g_ACQ_NUM_CORES                            : natural := 2;
   g_TRIG_MUX_NUM_CORES                       : natural := 2;
@@ -92,6 +102,10 @@ port (
   aux_clk_p_i                                : in std_logic;
   aux_clk_n_i                                : in std_logic;
 
+  -- LINK01 clock. From clock switch
+  afc_link01_clk_p_i                         : in std_logic := '0';
+  afc_link01_clk_n_i                         : in std_logic := '1';
+
   ---------------------------------------------------------------------------
   -- Reset Button
   ---------------------------------------------------------------------------
@@ -123,6 +137,16 @@ port (
   -- ADN4604ASVZ
   ---------------------------------------------------------------------------
   adn4604_vadj2_clk_updt_n_o                 : out std_logic;
+
+  ---------------------------------------------------------------------------
+  -- AFC I2C.
+  ---------------------------------------------------------------------------
+  -- Si57x oscillator
+  afc_si57x_scl_b                            : inout std_logic;
+  afc_si57x_sda_b                            : inout std_logic;
+
+  -- Si57x oscillator output enable
+  afc_si57x_oe_o                             : out   std_logic;
 
   ---------------------------------------------------------------------------
   -- PCIe pins
@@ -203,6 +227,9 @@ port (
   clk_trig_ref_o                             : out std_logic;
   rst_trig_ref_n_o                           : out std_logic;
 
+  clk_link01_p_o                             : out std_logic;
+  clk_link01_n_o                             : out std_logic;
+
   --  Interrupts
   irq_user_i                                 : in std_logic_vector(g_NUM_USER_IRQ + 5 downto 6) := (others => '0');
 
@@ -221,6 +248,16 @@ port (
   trig_dbg_o                                 : out std_logic_vector(c_NUM_TRIG-1 downto 0);
   trig_dbg_data_sync_o                       : out std_logic_vector(c_NUM_TRIG-1 downto 0);
   trig_dbg_data_degliteched_o                : out std_logic_vector(c_NUM_TRIG-1 downto 0);
+
+  -- AFC Si57x
+  afc_si57x_ext_wr_i                         : in  std_logic := '0';
+  afc_si57x_ext_rfreq_value_i                : in  std_logic_vector(37 downto 0) := (others => '0');
+  afc_si57x_ext_n1_value_i                   : in  std_logic_vector(6 downto 0) := (others => '0');
+  afc_si57x_ext_hs_value_i                   : in  std_logic_vector(2 downto 0) := (others => '0');
+  afc_si57x_sta_reconfig_done_o              : out std_logic;
+
+  afc_si57x_oe_i                             : in std_logic := '1';
+  afc_si57x_addr_i                           : in std_logic_vector(7 downto 0) := "10101010";
 
   --  The wishbone bus from the pcie/host to the application
   --  LSB addresses are not available (used by the carrier).
@@ -365,12 +402,22 @@ begin
       g_CLKBOUT_MULT_F                         => g_CLKBOUT_MULT_F,
       g_CLK0_DIVIDE_F                          => g_CLK0_DIVIDE_F,
       g_CLK1_DIVIDE                            => g_CLK1_DIVIDE,
+      g_SYS_CLOCK_FREQ                         => g_SYS_CLOCK_FREQ,
+      -- AFC Si57x parameters
+      g_AFC_SI57x_I2C_FREQ                     => g_AFC_SI57x_I2C_FREQ,
+      -- Whether or not to initialize oscilator with the specified values
+      g_AFC_SI57x_INIT_OSC                     => g_AFC_SI57x_INIT_OSC,
+      -- Init Oscillator values
+      g_AFC_SI57x_INIT_RFREQ_VALUE             => g_AFC_SI57x_INIT_RFREQ_VALUE,
+      g_AFC_SI57x_INIT_N1_VALUE                => g_AFC_SI57x_INIT_N1_VALUE,
+      g_AFC_SI57x_INIT_HS_VALUE                => g_AFC_SI57x_INIT_HS_VALUE,
       --  If true, instantiate a VIC/UART/DIAG/SPI.
       g_WITH_VIC                               => g_WITH_VIC,
       g_WITH_UART_MASTER                       => g_WITH_UART_MASTER,
       g_WITH_DIAG                              => g_WITH_DIAG,
       g_WITH_TRIGGER                           => g_WITH_TRIGGER,
       g_WITH_SPI                               => g_WITH_SPI,
+      g_WITH_AFC_SI57x                         => g_WITH_AFC_SI57x,
       g_WITH_BOARD_I2C                         => g_WITH_BOARD_I2C,
       -- Auxiliary clock used to sync incoming triggers in the trigger module.
       -- If false, trigger will be synch'ed with clk_sys
@@ -391,6 +438,9 @@ begin
 
       aux_clk_p_i                              => aux_clk_p_i,
       aux_clk_n_i                              => aux_clk_n_i,
+
+      afc_link01_clk_p_i                       => afc_link01_clk_p_i,
+      afc_link01_clk_n_i                       => afc_link01_clk_n_i,
 
       ---------------------------------------------------------------------------
       -- Reset Button
@@ -423,6 +473,16 @@ begin
       -- ADN4604ASVZ
       ---------------------------------------------------------------------------
       adn4604_vadj2_clk_updt_n_o               => adn4604_vadj2_clk_updt_n_o,
+
+      ---------------------------------------------------------------------------
+      -- AFC I2C.
+      ---------------------------------------------------------------------------
+      -- Si57x oscillator
+      afc_si57x_scl_b                          => afc_si57x_scl_b,
+      afc_si57x_sda_b                          => afc_si57x_sda_b,
+
+      -- Si57x oscillator output enable
+      afc_si57x_oe_o                           => afc_si57x_oe_o,
 
       ---------------------------------------------------------------------------
       -- PCIe pins
@@ -503,6 +563,9 @@ begin
       clk_trig_ref_o                           => clk_trig_ref,
       rst_trig_ref_n_o                         => clk_trig_ref_rstn,
 
+      clk_link01_p_o                           => clk_link01_p_o,
+      clk_link01_n_o                           => clk_link01_n_o,
+
       --  Interrupts
       irq_user_i                               => irq_user_i,
 
@@ -521,6 +584,16 @@ begin
       trig_dbg_o                               => trig_dbg_o,
       trig_dbg_data_sync_o                     => trig_dbg_data_sync_o,
       trig_dbg_data_degliteched_o              => trig_dbg_data_degliteched_o,
+
+      -- AFC Si57x
+      afc_si57x_ext_wr_i                       => afc_si57x_ext_wr_i,
+      afc_si57x_ext_rfreq_value_i              => afc_si57x_ext_rfreq_value_i,
+      afc_si57x_ext_n1_value_i                 => afc_si57x_ext_n1_value_i,
+      afc_si57x_ext_hs_value_i                 => afc_si57x_ext_hs_value_i,
+      afc_si57x_sta_reconfig_done_o            => afc_si57x_sta_reconfig_done_o,
+
+      afc_si57x_oe_i                           => afc_si57x_oe_i,
+      afc_si57x_addr_i                         => afc_si57x_addr_i,
 
       --  The wishbone bus from the pcie/host to the application
       --  LSB addresses are not available (used by the carrier).
