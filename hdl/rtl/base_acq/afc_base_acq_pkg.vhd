@@ -222,6 +222,9 @@ package afc_base_acq_pkg is
     clk_aux_o                                  : out std_logic;
     rst_aux_n_o                                : out std_logic;
 
+    clk_aux_raw_o                              : out std_logic;
+    rst_aux_raw_n_o                            : out std_logic;
+
     clk_200mhz_o                               : out std_logic;
     rst_200mhz_n_o                             : out std_logic;
 

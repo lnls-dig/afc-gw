@@ -218,6 +218,9 @@ port (
   clk_aux_o                                  : out std_logic;
   rst_aux_n_o                                : out std_logic;
 
+  clk_aux_raw_o                              : out std_logic;
+  rst_aux_raw_n_o                            : out std_logic;
+
   clk_200mhz_o                               : out std_logic;
   rst_200mhz_n_o                             : out std_logic;
 
@@ -553,6 +556,9 @@ begin
 
       clk_aux_o                                => clk_aux,
       rst_aux_n_o                              => clk_aux_rstn,
+
+      clk_aux_raw_o                            => clk_aux_raw_o,
+      rst_aux_raw_n_o                          => rst_aux_raw_n_o,
 
       clk_200mhz_o                             => clk_200mhz,
       rst_200mhz_n_o                           => clk_200mhz_rstn,
