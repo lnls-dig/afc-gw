@@ -218,6 +218,9 @@ port (
   clk_aux_o                                : out std_logic;
   rst_aux_n_o                              : out std_logic;
 
+  clk_aux_raw_o                            : out std_logic;
+  rst_aux_raw_n_o                          : out std_logic;
+
   clk_200mhz_o                             : out std_logic;
   rst_200mhz_n_o                           : out std_logic;
 
@@ -465,8 +468,9 @@ architecture top of afc_base is
   constant c_clk_pcie_id                     : natural := 2;
 
   -- Number of auxiliary clocks
-  constant c_num_aux_clks                    : natural := 1; -- CLK_AUX
+  constant c_num_aux_clks                    : natural := 2; -- CLK_AUX, CLK_TCLKA (AUX_RAW)
   constant c_clk_aux_id                      : natural := 0;
+  constant c_clk_aux_raw_id                  : natural := 1;
 
   -- Trigger constants
   constant c_TRIG_SYNC_EDGE                  : string := "positive";
@@ -500,9 +504,12 @@ architecture top of afc_base is
   signal rst_button_sys_n                    : std_logic;
 
   signal clk_aux                             : std_logic;
+  signal clk_aux_raw                         : std_logic;
   signal clk_aux_locked                      : std_logic;
   signal clk_aux_rstn                        : std_logic;
   signal clk_aux_rst                         : std_logic;
+  signal clk_aux_raw_rstn                    : std_logic;
+  signal clk_aux_raw_rst                     : std_logic;
 
   signal clk_sys                             : std_logic;
   signal clk_200mhz                          : std_logic;
@@ -726,14 +733,16 @@ begin
       g_clkbout_mult_f                         => 18,
 
       -- 125 MHz output clock
-      g_clk0_divide_f                          => 10
+      g_clk0_divide_f                          => 10,
+      -- 125 MHz output clock
+      g_clk1_divide                            => 18
     )
     port map (
       rst_i                                    => '0',
       clk_i                                    => aux_clk_gen_bufg,
       --clk_i                                    => aux_clk_gen,
       clk0_o                                   => clk_aux,              -- 125MHz locked clock
-      clk1_o                                   => open,
+      clk1_o                                   => clk_aux_raw,          -- ~64.44 MHz
       clk2_o                                   => open,
       locked_o                                 => clk_aux_locked        -- '1' when the PLL has locked
     );
@@ -741,7 +750,7 @@ begin
     -- Reset synchronization. Hold reset line until few locked cycles have passed.
     cmp_aux_reset : gc_reset
     generic map(
-      g_clocks                                 => c_num_aux_clks        -- CLK_AUX
+      g_clocks                                 => c_num_aux_clks        -- CLK_AUX, CLK_AUX_RAW
     )
     port map(
       --free_clk_i                               => aux_clk_gen,
@@ -752,12 +761,14 @@ begin
     );
 
     reset_aux_clks(c_clk_aux_id)               <= clk_aux;
+    reset_aux_clks(c_clk_aux_raw_id)           <= clk_aux_raw;
 
   end generate;
 
   gen_without_aux_clk : if not g_WITH_AUX_CLK generate
 
     clk_aux                                    <= '0';
+    clk_aux_raw                                <= '0';
     clk_aux_locked                             <= '0';
 
     reset_aux_rstn                             <= (others => '1');
@@ -768,9 +779,15 @@ begin
   clk_aux_rstn                               <= reset_aux_rstn(c_clk_aux_id);
   clk_aux_rst                                <= not(reset_aux_rstn(c_clk_aux_id));
 
+  clk_aux_raw_rstn                           <= reset_aux_rstn(c_clk_aux_raw_id);
+  clk_aux_raw_rst                            <= not(reset_aux_rstn(c_clk_aux_raw_id));
+
   -- Output assignments
   clk_aux_o                                  <= clk_aux;
   rst_aux_n_o                                <= clk_aux_rstn;
+
+  clk_aux_raw_o                              <= clk_aux_raw;
+  rst_aux_raw_n_o                            <= clk_aux_raw_rstn;
 
   -----------------------------------------------------------------------------
   -- LINK01 clock
