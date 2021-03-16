@@ -88,9 +88,9 @@ port (
   aux_clk_p_i                              : in std_logic := '0';
   aux_clk_n_i                              : in std_logic := '1';
 
-  -- LINK01 clock. From clock switch
-  afc_link01_clk_p_i                       : in std_logic := '0';
-  afc_link01_clk_n_i                       : in std_logic := '1';
+  -- FP2_CLK1 clock. From clock switch
+  afc_fp2_clk1_p_i                         : in std_logic := '0';
+  afc_fp2_clk1_n_i                         : in std_logic := '1';
 
   ---------------------------------------------------------------------------
   -- Reset Button
@@ -230,8 +230,8 @@ port (
   clk_trig_ref_o                           : out std_logic;
   rst_trig_ref_n_o                         : out std_logic;
 
-  clk_link01_p_o                           : out std_logic;
-  clk_link01_n_o                           : out std_logic;
+  clk_fp2_clk1_p_o                         : out std_logic;
+  clk_fp2_clk1_n_o                         : out std_logic;
 
   --  Interrupts
   irq_user_i                               : in std_logic_vector(g_NUM_USER_IRQ + 5 downto 6) := (others => '0');
@@ -790,11 +790,11 @@ begin
   rst_aux_raw_n_o                            <= clk_aux_raw_rstn;
 
   -----------------------------------------------------------------------------
-  -- LINK01 clock
+  -- FP2_CLK1 clock
   -----------------------------------------------------------------------------
 
-  clk_link01_p_o                             <= afc_link01_clk_p_i;
-  clk_link01_n_o                             <= afc_link01_clk_n_i;
+  clk_fp2_clk1_p_o                           <= afc_fp2_clk1_p_i;
+  clk_fp2_clk1_n_o                           <= afc_fp2_clk1_n_i;
 
   -----------------------------------------------------------------------------
   -- PCIe Core

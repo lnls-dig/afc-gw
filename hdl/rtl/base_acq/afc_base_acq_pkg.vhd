@@ -106,9 +106,9 @@ package afc_base_acq_pkg is
     aux_clk_p_i                                : in std_logic;
     aux_clk_n_i                                : in std_logic;
 
-    -- LINK01 clock. From clock switch
-    afc_link01_clk_p_i                         : in std_logic := '0';
-    afc_link01_clk_n_i                         : in std_logic := '1';
+    -- FP2_CLK1 clock. From clock switch
+    afc_fp2_clk1_p_i                           : in std_logic := '0';
+    afc_fp2_clk1_n_i                           : in std_logic := '1';
 
     ---------------------------------------------------------------------------
     -- Reset Button
@@ -234,8 +234,8 @@ package afc_base_acq_pkg is
     clk_trig_ref_o                             : out std_logic;
     rst_trig_ref_n_o                           : out std_logic;
 
-    clk_link01_p_o                             : out std_logic;
-    clk_link01_n_o                             : out std_logic;
+    clk_fp2_clk1_p_o                           : out std_logic;
+    clk_fp2_clk1_n_o                           : out std_logic;
 
     --  Interrupts
     irq_user_i                                 : in std_logic_vector(g_NUM_USER_IRQ + 5 downto 6) := (others => '0');
