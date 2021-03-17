@@ -51,6 +51,7 @@ generic (
   g_CLKBOUT_MULT_F                         : integer := 48;
   g_CLK0_DIVIDE_F                          : integer := 12;
   g_CLK1_DIVIDE                            : integer := 6;
+  g_CLK2_DIVIDE                            : integer := 4;
   g_SYS_CLOCK_FREQ                         : integer := 100000000;
   -- AFC Si57x parameters
   g_AFC_SI57x_I2C_FREQ                     : integer := 400000;
@@ -226,6 +227,9 @@ port (
 
   clk_pcie_o                               : out std_logic;
   rst_pcie_n_o                             : out std_logic;
+
+  clk_300mhz_o                             : out std_logic;
+  rst_300mhz_n_o                           : out std_logic;
 
   clk_trig_ref_o                           : out std_logic;
   rst_trig_ref_n_o                         : out std_logic;
@@ -462,10 +466,11 @@ architecture top of afc_base is
   constant c_button_rst_width                : natural := 255;
 
   -- Number of top level clocks
-  constant c_num_tlvl_clks                   : natural := 3; -- CLK_SYS and CLK_200 MHz and PCIE
+  constant c_num_tlvl_clks                   : natural := 4; -- CLK_SYS and CLK_200 MHz, PCIE, CLK_300 MHz
   constant c_clk_sys_id                      : natural := 0;
   constant c_clk_200mhz_id                   : natural := 1;
   constant c_clk_pcie_id                     : natural := 2;
+  constant c_clk_300mhz_id                   : natural := 3;
 
   -- Number of auxiliary clocks
   constant c_num_aux_clks                    : natural := 2; -- CLK_AUX, CLK_TCLKA (AUX_RAW)
@@ -499,6 +504,8 @@ architecture top of afc_base is
   signal clk_sys_rst                         : std_logic;
   signal clk_200mhz_rst                      : std_logic;
   signal clk_200mhz_rstn                     : std_logic;
+  signal clk_300mhz_rst                      : std_logic;
+  signal clk_300mhz_rstn                     : std_logic;
   signal rst_button_sys_pp                   : std_logic;
   signal rst_button_sys                      : std_logic;
   signal rst_button_sys_n                    : std_logic;
@@ -513,6 +520,7 @@ architecture top of afc_base is
 
   signal clk_sys                             : std_logic;
   signal clk_200mhz                          : std_logic;
+  signal clk_300mhz                          : std_logic;
   signal clk_pcie                            : std_logic;
 
   -- "c_num_tlvl_clks" clocks
@@ -630,7 +638,9 @@ begin
     -- 100 MHz output clock
     g_clk0_divide_f                          => g_CLK0_DIVIDE_F,
     -- 200 MHz output clock
-    g_clk1_divide                            => g_CLK1_DIVIDE
+    g_clk1_divide                            => g_CLK1_DIVIDE,
+    -- 300 MHz output clock
+    g_clk2_divide                            => g_CLK2_DIVIDE
   )
   port map (
     rst_i                                    => '0',
@@ -638,6 +648,7 @@ begin
     --clk_i                                    => sys_clk_gen,
     clk0_o                                   => clk_sys,      -- 100MHz locked clock
     clk1_o                                   => clk_200mhz,   -- 200MHz locked clock
+    clk2_o                                   => clk_300mhz,   -- 300MHz locked clock
     locked_o                                 => locked        -- '1' when the PLL has locked
   );
 
@@ -657,6 +668,7 @@ begin
   reset_clks(c_clk_sys_id)                   <= clk_sys;
   reset_clks(c_clk_200mhz_id)                <= clk_200mhz;
   reset_clks(c_clk_pcie_id)                  <= clk_pcie;
+  reset_clks(c_clk_300mhz_id)                <= clk_300mhz;
 
   -- Reset for PCIe core. Caution when resetting the PCIe core after the
   -- initialization. The PCIe core needs to retrain the link and the PCIe
@@ -674,6 +686,9 @@ begin
   -- Reset synchronous to clk_pcie
   clk_pcie_rstn                              <= reset_rstn(c_clk_pcie_id);
   clk_pcie_rst                               <=  not(reset_rstn(c_clk_pcie_id));
+  -- Reset synchronous to clk300mhz
+  clk_300mhz_rstn                            <= reset_rstn(c_clk_300mhz_id);
+  clk_300mhz_rst                             <=  not(reset_rstn(c_clk_300mhz_id));
 
   -- Output assignments
   clk_sys_o                                  <= clk_sys;
@@ -684,6 +699,9 @@ begin
 
   clk_pcie_o                                 <= clk_pcie;
   rst_pcie_n_o                               <= clk_pcie_rstn;
+
+  clk_300mhz_o                               <= clk_300mhz;
+  rst_300mhz_n_o                             <= clk_300mhz_rstn;
 
   -- Generate button reset synchronous to each clock domain
   -- Detect button positive edge of clk_sys
