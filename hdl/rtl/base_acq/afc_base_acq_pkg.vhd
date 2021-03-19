@@ -21,7 +21,7 @@ package afc_base_acq_pkg is
   -- Types
   --------------------------------------------------------------------
 
-  type t_natural_array is array (natural range <>) of natural;
+  type t_num_array is array (natural range <>) of natural;
   type t_sdb_device_array is array (natural range <>) of t_sdb_device;
 
   --------------------------------------------------------------------
@@ -38,7 +38,7 @@ package afc_base_acq_pkg is
   --------------------------------------------------------------------
 
   function f_gen_ramp(start : natural; finish : natural; increasing : boolean := true)
-    return t_natural_array;
+    return t_num_array;
 
   function f_build_auto_device_array(sdb_device : t_sdb_device ; length : positive)
     return t_sdb_record_array;
@@ -284,9 +284,9 @@ end afc_base_acq_pkg;
 package body afc_base_acq_pkg is
 
   function f_gen_ramp(start : natural; finish : natural; increasing : boolean := true)
-    return t_natural_array
+    return t_num_array
   is
-    variable res : t_natural_array(finish-start-1 downto 0);
+    variable res : t_num_array(finish-start-1 downto 0);
     constant res_length : natural := res'length;
   begin
 

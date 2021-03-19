@@ -291,13 +291,13 @@ architecture top of afc_base_acq is
   -- Slaves indexes. We use g_ACQ_NUM_CORES and g_TRIG_MUX_NUM_CORES as the top index, as
   -- we later check if this is 0 or 1 to determine if we need to omit acquisition core
   -- or trigger_mux core
-  constant c_slv_acq_core_ids                : t_natural_array(g_ACQ_NUM_CORES downto 0) :=
+  constant c_slv_acq_core_ids                : t_num_array(g_ACQ_NUM_CORES downto 0) :=
         f_gen_ramp(0,
           g_ACQ_NUM_CORES+1);
-  constant c_slv_trig_mux_ids                : t_natural_array(g_TRIG_MUX_NUM_CORES downto 0) :=
+  constant c_slv_trig_mux_ids                : t_num_array(g_TRIG_MUX_NUM_CORES downto 0) :=
         f_gen_ramp(c_slv_acq_core_ids'length,
           c_slv_acq_core_ids'length+g_TRIG_MUX_NUM_CORES+1);
-  constant c_slv_user_ids                    : t_natural_array(g_USER_NUM_CORES downto 0) :=
+  constant c_slv_user_ids                    : t_num_array(g_USER_NUM_CORES downto 0) :=
         f_gen_ramp(c_slv_acq_core_ids'length + c_slv_trig_mux_ids'length,
           c_slv_acq_core_ids'length + c_slv_trig_mux_ids'length+g_USER_NUM_CORES+1);
 
