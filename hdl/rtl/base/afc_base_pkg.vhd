@@ -35,6 +35,7 @@ package afc_base_pkg is
     g_CLK0_DIVIDE_F                          : integer := 12;
     g_CLK1_DIVIDE                            : integer := 6;
     g_CLK2_DIVIDE                            : integer := 4;
+    g_CLK3_DIVIDE                            : integer := 4;
     g_SYS_CLOCK_FREQ                         : integer := 100000000;
     -- AFC Si57x parameters
     g_AFC_SI57x_I2C_FREQ                     : integer := 400000;
@@ -211,8 +212,11 @@ package afc_base_pkg is
     clk_pcie_o                               : out std_logic;
     rst_pcie_n_o                             : out std_logic;
 
-    clk_300mhz_o                             : out std_logic;
-    rst_300mhz_n_o                           : out std_logic;
+    clk_user2_o                              : out std_logic;
+    rst_user2_n_o                            : out std_logic;
+
+    clk_user3_o                              : out std_logic;
+    rst_user3_n_o                            : out std_logic;
 
     clk_trig_ref_o                           : out std_logic;
     rst_trig_ref_n_o                         : out std_logic;

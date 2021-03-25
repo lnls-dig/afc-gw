@@ -52,6 +52,7 @@ generic (
   g_CLK0_DIVIDE_F                            : integer := 12;
   g_CLK1_DIVIDE                              : integer := 6;
   g_CLK2_DIVIDE                              : integer := 4;
+  g_CLK3_DIVIDE                              : integer := 4;
   g_SYS_CLOCK_FREQ                           : integer := 100000000;
   -- AFC Si57x parameters
   g_AFC_SI57x_I2C_FREQ                       : integer := 400000;
@@ -228,8 +229,11 @@ port (
   clk_pcie_o                                 : out std_logic;
   rst_pcie_n_o                               : out std_logic;
 
-  clk_300mhz_o                               : out std_logic;
-  rst_300mhz_n_o                             : out std_logic;
+  clk_user2_o                                : out std_logic;
+  rst_user2_n_o                              : out std_logic;
+
+  clk_user3_o                                : out std_logic;
+  rst_user3_n_o                              : out std_logic;
 
   clk_trig_ref_o                             : out std_logic;
   rst_trig_ref_n_o                           : out std_logic;
@@ -391,8 +395,6 @@ architecture top of afc_base_acq is
   signal clk_200mhz_rstn                     : std_logic;
   signal clk_pcie                            : std_logic;
   signal clk_pcie_rstn                       : std_logic;
-  signal clk_300mhz                          : std_logic;
-  signal clk_300mhz_rstn                     : std_logic;
   signal clk_trig_ref                        : std_logic;
   signal clk_trig_ref_rstn                   : std_logic;
 
@@ -412,6 +414,7 @@ begin
       g_CLK0_DIVIDE_F                          => g_CLK0_DIVIDE_F,
       g_CLK1_DIVIDE                            => g_CLK1_DIVIDE,
       g_CLK2_DIVIDE                            => g_CLK2_DIVIDE,
+      g_CLK3_DIVIDE                            => g_CLK3_DIVIDE,
       g_SYS_CLOCK_FREQ                         => g_SYS_CLOCK_FREQ,
       -- AFC Si57x parameters
       g_AFC_SI57x_I2C_FREQ                     => g_AFC_SI57x_I2C_FREQ,
@@ -573,8 +576,11 @@ begin
       clk_pcie_o                               => clk_pcie,
       rst_pcie_n_o                             => clk_pcie_rstn,
 
-      clk_300mhz_o                             => clk_300mhz,
-      rst_300mhz_n_o                           => clk_300mhz_rstn,
+      clk_user2_o                              => clk_user2_o,
+      rst_user2_n_o                            => rst_user2_n_o,
+
+      clk_user3_o                              => clk_user3_o,
+      rst_user3_n_o                            => rst_user3_n_o,
 
       clk_trig_ref_o                           => clk_trig_ref,
       rst_trig_ref_n_o                         => clk_trig_ref_rstn,
@@ -631,9 +637,6 @@ begin
 
   clk_pcie_o       <= clk_pcie;
   rst_pcie_n_o     <= clk_pcie_rstn;
-
-  clk_300mhz_o     <= clk_300mhz;
-  rst_300mhz_n_o   <= clk_300mhz_rstn;
 
   clk_trig_ref_o   <= clk_trig_ref;
   rst_trig_ref_n_o <= clk_trig_ref_rstn;

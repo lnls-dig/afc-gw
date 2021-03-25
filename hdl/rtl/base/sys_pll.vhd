@@ -37,8 +37,10 @@ generic(
   g_clk0_divide_f                           : integer := 10;
   -- 200 MHz output clock
   g_clk1_divide                             : integer := 5;
-  -- 200 MHz output clock
-  g_clk2_divide                             : integer := 5
+  -- user2 output clock
+  g_clk2_divide                             : integer := 5;
+  -- user3 output clock
+  g_clk3_divide                             : integer := 5
 );
 port(
   rst_i                                     : in std_logic := '0';
@@ -46,6 +48,7 @@ port(
   clk0_o                                    : out std_logic;
   clk1_o                                    : out std_logic;
   clk2_o                                    : out std_logic;
+  clk3_o                                    : out std_logic;
   locked_o                                  : out std_logic
 );
 end sys_pll;
@@ -58,6 +61,7 @@ architecture syn of sys_pll is
   signal s_clk0                             : std_logic;
   signal s_clk1                             : std_logic;
   signal s_clk2                             : std_logic;
+  signal s_clk3                             : std_logic;
 begin
 
   -- Clock PLL
@@ -73,7 +77,7 @@ begin
       CLKOUT0_DIVIDE                        => g_clk0_divide_f,
       CLKOUT1_DIVIDE                        => g_clk1_divide,
       CLKOUT2_DIVIDE                        => g_clk2_divide,
-      CLKOUT3_DIVIDE                        => 1,
+      CLKOUT3_DIVIDE                        => g_clk3_divide,
       CLKOUT4_DIVIDE                        => 1,
       CLKOUT5_DIVIDE                        => 1,
       -- CLKOUT0_DUTY_CYCLE - CLKOUT5_DUTY_CYCLE: Duty cycle for CLKOUT outputs (0.001-0.999).
@@ -102,7 +106,7 @@ begin
       CLKOUT0                               => s_clk0,            -- 1-bit output: CLKOUT0
       CLKOUT1                               => s_clk1,            -- 1-bit output: CLKOUT1
       CLKOUT2                               => s_clk2,            -- 1-bit output: CLKOUT2
-      CLKOUT3                               => open,              -- 1-bit output: CLKOUT3
+      CLKOUT3                               => s_clk3,            -- 1-bit output: CLKOUT3
       CLKOUT4                               => open,              -- 1-bit output: CLKOUT4
       CLKOUT5                               => open,              -- 1-bit output: CLKOUT5
       -- DRP Ports: 16-bit (each) output: Dynamic reconfiguration ports
@@ -151,6 +155,12 @@ begin
     port map(
         O                                   => clk2_o,
         I                                   => s_clk2
+    );
+
+    cmp_clkout3_buf : BUFG
+    port map(
+        O                                   => clk3_o,
+        I                                   => s_clk3
     );
 
 end syn;
