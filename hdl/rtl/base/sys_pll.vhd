@@ -35,12 +35,16 @@ generic(
 
   -- 100 MHz output clock
   g_clk0_divide_f                           : integer := 10;
+  g_clk0_phase                              : real    := 0.0;
   -- 200 MHz output clock
   g_clk1_divide                             : integer := 5;
+  g_clk1_phase                              : real    := 0.0;
   -- user2 output clock
   g_clk2_divide                             : integer := 5;
+  g_clk2_phase                              : real    := 0.0;
   -- user3 output clock
-  g_clk3_divide                             : integer := 5
+  g_clk3_divide                             : integer := 5;
+  g_clk3_phase                              : real    := 0.0
 );
 port(
   rst_i                                     : in std_logic := '0';
@@ -88,10 +92,10 @@ begin
       CLKOUT4_DUTY_CYCLE                    => 0.5,
       CLKOUT5_DUTY_CYCLE                    => 0.5,
       -- CLKOUT0_PHASE - CLKOUT5_PHASE: Phase offset for CLKOUT outputs (-360.000-360.000).
-      CLKOUT0_PHASE                         => 0.0,
-      CLKOUT1_PHASE                         => 0.0,
-      CLKOUT2_PHASE                         => 0.0,
-      CLKOUT3_PHASE                         => 0.0,
+      CLKOUT0_PHASE                         => g_clk0_phase,
+      CLKOUT1_PHASE                         => g_clk1_phase,
+      CLKOUT2_PHASE                         => g_clk2_phase,
+      CLKOUT3_PHASE                         => g_clk3_phase,
       CLKOUT4_PHASE                         => 0.0,
       CLKOUT5_PHASE                         => 0.0,
       COMPENSATION                          => "ZHOLD",   -- ZHOLD, BUF_IN, EXTERNAL, INTERNAL

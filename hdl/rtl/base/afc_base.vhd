@@ -50,9 +50,13 @@ generic (
   g_DIVCLK_DIVIDE                          : integer := 5;
   g_CLKBOUT_MULT_F                         : integer := 48;
   g_CLK0_DIVIDE_F                          : integer := 12;
+  g_CLK0_PHASE                             : real    := 0.0;
   g_CLK1_DIVIDE                            : integer := 6;
+  g_CLK1_PHASE                             : real    := 0.0;
   g_CLK2_DIVIDE                            : integer := 4;
+  g_CLK2_PHASE                             : real    := 0.0;
   g_CLK3_DIVIDE                            : integer := 4;
+  g_CLK3_PHASE                             : real    := 0.0;
   g_SYS_CLOCK_FREQ                         : integer := 100000000;
   -- AFC Si57x parameters
   g_AFC_SI57x_I2C_FREQ                     : integer := 400000;
@@ -606,12 +610,16 @@ architecture top of afc_base is
 
     -- 100 MHz output clock
     g_clk0_divide_f                         : integer := 10;
+    g_clk0_phase                            : real    := 0.0;
     -- 200 MHz output clock
     g_clk1_divide                           : integer := 5;
+    g_clk1_phase                            : real    := 0.0;
     -- user2 output clock
     g_clk2_divide                           : integer := 5;
+    g_clk2_phase                            : real    := 0.0;
     -- user3 output clock
-    g_clk3_divide                           : integer := 5
+    g_clk3_divide                           : integer := 5;
+    g_clk3_phase                            : real    := 0.0
   );
   port(
     rst_i                                   : in std_logic := '0';
@@ -648,12 +656,16 @@ begin
 
     -- 100 MHz output clock
     g_clk0_divide_f                          => g_CLK0_DIVIDE_F,
+    g_clk0_phase                             => g_CLK0_PHASE,
     -- 200 MHz output clock
     g_clk1_divide                            => g_CLK1_DIVIDE,
+    g_clk1_phase                             => g_CLK1_PHASE,
     -- CLK2 output clock
     g_clk2_divide                            => g_CLK2_DIVIDE,
+    g_clk2_phase                             => g_CLK2_PHASE,
     -- CLK3 output clock
-    g_clk3_divide                            => g_CLK3_DIVIDE
+    g_clk3_divide                            => g_CLK3_DIVIDE,
+    g_clk3_phase                             => g_CLK3_PHASE
   )
   port map (
     rst_i                                    => '0',

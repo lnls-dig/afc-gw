@@ -50,9 +50,13 @@ generic (
   g_DIVCLK_DIVIDE                            : integer := 5;
   g_CLKBOUT_MULT_F                           : integer := 48;
   g_CLK0_DIVIDE_F                            : integer := 12;
+  g_CLK0_PHASE                               : real    := 0.0;
   g_CLK1_DIVIDE                              : integer := 6;
+  g_CLK1_PHASE                               : real    := 0.0;
   g_CLK2_DIVIDE                              : integer := 4;
+  g_CLK2_PHASE                               : real    := 0.0;
   g_CLK3_DIVIDE                              : integer := 4;
+  g_CLK3_PHASE                               : real    := 0.0;
   g_SYS_CLOCK_FREQ                           : integer := 100000000;
   -- AFC Si57x parameters
   g_AFC_SI57x_I2C_FREQ                       : integer := 400000;
@@ -412,9 +416,13 @@ begin
       g_DIVCLK_DIVIDE                          => g_DIVCLK_DIVIDE,
       g_CLKBOUT_MULT_F                         => g_CLKBOUT_MULT_F,
       g_CLK0_DIVIDE_F                          => g_CLK0_DIVIDE_F,
+      g_CLK0_PHASE                             => g_CLK0_PHASE,
       g_CLK1_DIVIDE                            => g_CLK1_DIVIDE,
+      g_CLK1_PHASE                             => g_CLK1_PHASE,
       g_CLK2_DIVIDE                            => g_CLK2_DIVIDE,
+      g_CLK2_PHASE                             => g_CLK2_PHASE,
       g_CLK3_DIVIDE                            => g_CLK3_DIVIDE,
+      g_CLK3_PHASE                             => g_CLK3_PHASE,
       g_SYS_CLOCK_FREQ                         => g_SYS_CLOCK_FREQ,
       -- AFC Si57x parameters
       g_AFC_SI57x_I2C_FREQ                     => g_AFC_SI57x_I2C_FREQ,

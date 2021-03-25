@@ -54,9 +54,13 @@ package afc_base_acq_pkg is
     g_DIVCLK_DIVIDE                            : integer := 5;
     g_CLKBOUT_MULT_F                           : integer := 48;
     g_CLK0_DIVIDE_F                            : integer := 12;
+    g_CLK0_PHASE                               : real    := 0.0;
     g_CLK1_DIVIDE                              : integer := 6;
+    g_CLK1_PHASE                               : real    := 0.0;
     g_CLK2_DIVIDE                              : integer := 4;
+    g_CLK2_PHASE                               : real    := 0.0;
     g_CLK3_DIVIDE                              : integer := 4;
+    g_CLK3_PHASE                               : real    := 0.0;
     g_SYS_CLOCK_FREQ                           : integer := 100000000;
     -- AFC Si57x parameters
     g_AFC_SI57x_I2C_FREQ                       : integer := 400000;
