@@ -56,6 +56,6 @@ with open(afc_base_xdc_gen_name, 'w') as outfile:
 
 files = [
     "afc_base_common.xcf",
-];
+]
 
 files.append(afc_base_xdc_gen_name)
