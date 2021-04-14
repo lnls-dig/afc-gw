@@ -1,11 +1,26 @@
 # Generate single .xdc file as the order is important, but Vivado
 # does not seem to respect that.
 
+# Common XDC to all boards
 filenames = [
     'pcie_core.xdc',
     'ddr_core.xdc',
-    'afc_base_common.xdc'
 ]
+
+xdc_boards_dict = {
+    'afc':       "afcv3_base_common.xdc",
+    'afcv3':     "afcv3_base_common.xdc",
+}
+
+try:
+    board
+except NameError:
+    assert False, "'board property must be defined'"
+
+assert isinstance(board, str), "'board' property must be a string"
+f = xdc_boards_dict.get(board, None)
+assert f is not None, "unknown name {} in 'xdc_boards_dict'".format(board)
+filenames.append(f)
 
 # Generic part for appending .xdc files to synthesis
 xdc_dict = {
