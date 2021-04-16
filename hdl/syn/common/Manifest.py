@@ -10,6 +10,7 @@ filenames = [
 xdc_boards_dict = {
     'afc':       "afcv3_base_common.xdc",
     'afcv3':     "afcv3_base_common.xdc",
+    'afcv4':     "afcv4_base_common.xdc",
 }
 
 try:
