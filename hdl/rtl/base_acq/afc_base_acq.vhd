@@ -74,6 +74,9 @@ generic (
   g_WITH_SPI                                 : boolean := false;
   g_WITH_AFC_SI57x                           : boolean := true;
   g_WITH_BOARD_I2C                           : boolean := true;
+  -- Select between tristate and bidirection triggers. AFCv3 and lower
+  -- has a tristate port and AFCv4 has bidirectional ones
+  g_TRIGGER_TRISTATE                         : boolean := true;
   g_ACQ_NUM_CORES                            : natural := 2;
   g_TRIG_MUX_NUM_CORES                       : natural := 2;
   g_USER_NUM_CORES                           : natural := 1;
@@ -127,8 +130,12 @@ port (
   ---------------------------------------------------------------------------
   -- Trigger pins
   ---------------------------------------------------------------------------
-  trig_dir_o                                 : out   std_logic_vector(c_NUM_TRIG-1 downto 0);
-  trig_b                                     : inout std_logic_vector(c_NUM_TRIG-1 downto 0);
+  trig_dir_o                               : out   std_logic_vector(c_NUM_TRIG-1 downto 0);
+  -- For AFCv3 and lower versions
+  trig_b                                   : inout std_logic_vector(c_NUM_TRIG-1 downto 0);
+  -- For AFCv4
+  trig_i                                   : in    std_logic_vector(c_NUM_TRIG-1 downto 0) := (others => '0');
+  trig_o                                   : out   std_logic_vector(c_NUM_TRIG-1 downto 0);
 
   ---------------------------------------------------------------------------
   -- AFC Diagnostics
@@ -440,6 +447,9 @@ begin
       g_WITH_SPI                               => g_WITH_SPI,
       g_WITH_AFC_SI57x                         => g_WITH_AFC_SI57x,
       g_WITH_BOARD_I2C                         => g_WITH_BOARD_I2C,
+      -- Select between tristate and bidirection triggers. AFCv3 and lower
+      -- has a tristate port and AFCv4 has bidirectional ones
+      g_TRIGGER_TRISTATE                       => g_TRIGGER_TRISTATE,
       -- Auxiliary clock used to sync incoming triggers in the trigger module.
       -- If false, trigger will be synch'ed with clk_sys
       g_WITH_AUX_CLK                           => g_WITH_AUX_CLK,
@@ -478,8 +488,12 @@ begin
       ---------------------------------------------------------------------------
       -- Trigger pins
       ---------------------------------------------------------------------------
-      trig_dir_o                               => trig_dir_o,
+      -- only used if g_trigger_tristate = true
       trig_b                                   => trig_b,
+      -- only used if g_trigger_tristate = false
+      trig_i                                   => trig_i,
+      trig_o                                   => trig_o,
+      trig_dir_o                               => trig_dir_o,
 
       ---------------------------------------------------------------------------
       -- AFC Diagnostics

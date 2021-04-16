@@ -74,6 +74,9 @@ generic (
   g_WITH_SPI                               : boolean := true;
   g_WITH_AFC_SI57x                         : boolean := true;
   g_WITH_BOARD_I2C                         : boolean := true;
+  -- Select between tristate and bidirection triggers. AFCv3 and lower
+  -- has a tristate port and AFCv4 has bidirectional ones
+  g_TRIGGER_TRISTATE                       : boolean := true;
   -- Auxiliary clock used to sync incoming triggers in the trigger module.
   -- If false, trigger will be synch'ed with clk_sys
   g_WITH_AUX_CLK                           : boolean := true;
@@ -114,7 +117,11 @@ port (
   -- Trigger pins
   ---------------------------------------------------------------------------
   trig_dir_o                               : out   std_logic_vector(c_NUM_TRIG-1 downto 0);
+  -- For AFCv3 and lower versions
   trig_b                                   : inout std_logic_vector(c_NUM_TRIG-1 downto 0);
+  -- For AFCv4
+  trig_i                                   : in    std_logic_vector(c_NUM_TRIG-1 downto 0) := (others => '0');
+  trig_o                                   : out   std_logic_vector(c_NUM_TRIG-1 downto 0);
 
   ---------------------------------------------------------------------------
   -- AFC Diagnostics
@@ -185,14 +192,14 @@ port (
   --fmc0_sda_b                               : inout std_logic;
 
   -- Presence
-  -- fmc0_prsnt_m2c_n_i                       : in std_logic := '0';
+  fmc0_prsnt_m2c_n_i                       : in std_logic := '1';
 
   ---- I2C interface for accessing FMC EEPROM. Connected to CPU
   --fmc1_scl_b                               : inout std_logic;
   --fmc1_sda_b                               : inout std_logic;
 
   -- Presence
-  -- fmc1_prsnt_m2c_n_i                       : in std_logic := '0';
+  fmc1_prsnt_m2c_n_i                       : in std_logic := '1';
 
   board_i2c_scl_b                          : inout std_logic;
   board_i2c_sda_b                          : inout std_logic;
@@ -1360,7 +1367,8 @@ begin
       g_interface_mode                       => PIPELINED,
       g_address_granularity                  => BYTE,
       g_sync_edge                            => c_TRIG_SYNC_EDGE,
-      g_trig_num                             => c_NUM_TRIG
+      g_trig_num                             => c_NUM_TRIG,
+      g_trigger_tristate                     => g_TRIGGER_TRISTATE
     )
     port map (
       clk_i                                  => clk_sys,
@@ -1378,7 +1386,11 @@ begin
       -----------------------------
       -- To/From pads
       -----------------------------
+      -- only used if g_trigger_tristate = true
       trig_b                                 => trig_b,
+      -- only used if g_trigger_tristate = false
+      trig_i                                 => trig_i,
+      trig_o                                 => trig_o,
       trig_dir_o                             => trig_dir_o,
 
       -----------------------------

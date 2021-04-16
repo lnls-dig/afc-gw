@@ -57,6 +57,9 @@ package afc_base_pkg is
     g_WITH_SPI                               : boolean := true;
     g_WITH_AFC_SI57x                         : boolean := true;
     g_WITH_BOARD_I2C                         : boolean := true;
+    -- Select between tristate and bidirection triggers. AFCv3 and lower
+    -- has a tristate port and AFCv4 has bidirectional ones
+    g_TRIGGER_TRISTATE                       : boolean := true;
     -- Auxiliary clock used to sync incoming triggers in the trigger module.
     -- If false, trigger will be synch'ed with clk_sys
     g_WITH_AUX_CLK                           : boolean := true;
@@ -97,7 +100,11 @@ package afc_base_pkg is
     -- Trigger pins
     ---------------------------------------------------------------------------
     trig_dir_o                               : out   std_logic_vector(c_NUM_TRIG-1 downto 0);
+    -- For AFCv3 and lower versions
     trig_b                                   : inout std_logic_vector(c_NUM_TRIG-1 downto 0);
+    -- For AFCv4
+    trig_i                                   : in    std_logic_vector(c_NUM_TRIG-1 downto 0) := (others => '0');
+    trig_o                                   : out   std_logic_vector(c_NUM_TRIG-1 downto 0);
 
     ---------------------------------------------------------------------------
     -- AFC Diagnostics
