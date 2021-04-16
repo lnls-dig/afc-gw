@@ -118,35 +118,35 @@ set_property IOSTANDARD LVCMOS15  [get_ports {trig_i[7]}]
 
 # FPGA MLVDS_DE_8_C: To MLVDS_DE_8. Controls DIR Rx17_P/N, Backplane trigger channel 0
 set_property PACKAGE_PIN L7       [get_ports {trig_dir_o[0]}]
-set_property IOSTANDARD LVCMOS15  [get_ports {trig_dir_o[0]}]
+set_property IOSTANDARD LVCMOS25  [get_ports {trig_dir_o[0]}]
 
 # FPGA MLVDS_DE_7_C: To MLVDS_DE_7. Controls DIR Tx17_P/N, Backplane trigger channel 1
 set_property PACKAGE_PIN J8       [get_ports {trig_dir_o[1]}]
-set_property IOSTANDARD LVCMOS15  [get_ports {trig_dir_o[1]}]
+set_property IOSTANDARD LVCMOS25  [get_ports {trig_dir_o[1]}]
 
 # FPGA MLVDS_DE_6_C: To MLVDS_DE_6. Controls DIR Rx18_P/N, Backplane trigger channel 2
 set_property PACKAGE_PIN J9       [get_ports {trig_dir_o[2]}]
-set_property IOSTANDARD LVCMOS15  [get_ports {trig_dir_o[2]}]
+set_property IOSTANDARD LVCMOS25  [get_ports {trig_dir_o[2]}]
 
 # FPGA MLVDS_DE_5_C: To MLVDS_DE_5. Controls DIR Tx18_P/N, Backplane trigger channel 3
 set_property PACKAGE_PIN K10      [get_ports {trig_dir_o[3]}]
-set_property IOSTANDARD LVCMOS15  [get_ports {trig_dir_o[3]}]
+set_property IOSTANDARD LVCMOS25  [get_ports {trig_dir_o[3]}]
 
 # FPGA MLVDS_DE_4_C: To MLVDS_DE_4. Controls DIR Rx19_P/N, Backplane trigger channel 4
 set_property PACKAGE_PIN H7       [get_ports {trig_dir_o[4]}]
-set_property IOSTANDARD LVCMOS15  [get_ports {trig_dir_o[4]}]
+set_property IOSTANDARD LVCMOS25  [get_ports {trig_dir_o[4]}]
 
 # FPGA MLVDS_DE_3_C: To MLVDS_DE_3. Controls DIR Tx19_P/N, Backplane trigger channel 5
 set_property PACKAGE_PIN K12      [get_ports {trig_dir_o[5]}]
-set_property IOSTANDARD LVCMOS15  [get_ports {trig_dir_o[5]}]
+set_property IOSTANDARD LVCMOS25  [get_ports {trig_dir_o[5]}]
 
 # FPGA MLVDS_DE_2_C: To MLVDS_DE_2. Controls DIR Rx20_P/N, Backplane trigger channel 6
 set_property PACKAGE_PIN L12      [get_ports {trig_dir_o[6]}]
-set_property IOSTANDARD LVCMOS15  [get_ports {trig_dir_o[6]}]
+set_property IOSTANDARD LVCMOS25  [get_ports {trig_dir_o[6]}]
 
 # FPGA MLVDS_DE_1_C: To MLVDS_DE_1. Controls DIR Tx20_P/N, Backplane trigger channel 7
 set_property PACKAGE_PIN H12      [get_ports {trig_dir_o[7]}]
-set_property IOSTANDARD LVCMOS15  [get_ports {trig_dir_o[7]}]
+set_property IOSTANDARD LVCMOS25  [get_ports {trig_dir_o[7]}]
 
 #######################################################################
 ##                      AFC Diagnostics Contraints                   ##
