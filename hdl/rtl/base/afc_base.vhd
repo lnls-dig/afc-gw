@@ -516,6 +516,8 @@ architecture top of afc_base is
   signal clk_sys_pcie_rst                    : std_logic;
   signal clk_pcie_rstn                       : std_logic;
   signal clk_pcie_rst                        : std_logic;
+  signal clk_sys_rstn_raw                    : std_logic;
+  signal clk_sys_rst_raw                     : std_logic;
   signal clk_sys_rstn                        : std_logic;
   signal clk_sys_rst                         : std_logic;
   signal clk_200mhz_rst                      : std_logic;
@@ -711,9 +713,25 @@ begin
   clk_sys_pcie_rstn                          <= reset_rstn(c_clk_sys_id) and rst_button_sys_n;
   clk_sys_pcie_rst                           <= not clk_sys_pcie_rstn;
   -- Reset for all other modules
-  clk_sys_rstn                               <= reset_rstn(c_clk_sys_id) and rst_button_sys_n and
+  clk_sys_rstn_raw                           <= reset_rstn(c_clk_sys_id) and rst_button_sys_n and
                                                    uart_rstn and wb_ma_pcie_rstn_sync;
-  clk_sys_rst                                <= not clk_sys_rstn;
+  clk_sys_rst_raw                            <= not clk_sys_rstn_raw;
+
+  -- Additional stage for clk_sys reset as we AND other resets that might fail
+  -- on highly constrained designs.
+  cmp_sys_reset_aasd : gc_reset_multi_aasd
+  generic map (
+    g_CLOCKS                                 => 1,
+    g_RST_LEN                                => 16
+  )
+  port map (
+    arst_i                                   => clk_sys_rst_raw,
+    clks_i(0)                                => clk_sys,
+    rst_n_o(0)                               => clk_sys_rstn
+  );
+
+  clk_sys_rst <= not clk_sys_rstn;
+
   -- Reset synchronous to clk200mhz
   clk_200mhz_rstn                            <= reset_rstn(c_clk_200mhz_id);
   clk_200mhz_rst                             <=  not(reset_rstn(c_clk_200mhz_id));
