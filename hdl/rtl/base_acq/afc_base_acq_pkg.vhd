@@ -112,8 +112,8 @@ package afc_base_acq_pkg is
     sys_clk_p_i                                : in std_logic;
     sys_clk_n_i                                : in std_logic;
 
-    aux_clk_p_i                                : in std_logic;
-    aux_clk_n_i                                : in std_logic;
+    aux_clk_p_i                                : in std_logic := '0';
+    aux_clk_n_i                                : in std_logic := '1';
 
     -- FP2_CLK1 clock. From clock switch
     afc_fp2_clk1_p_i                           : in std_logic := '0';
