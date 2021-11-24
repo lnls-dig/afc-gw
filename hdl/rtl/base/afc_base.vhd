@@ -58,6 +58,14 @@ generic (
   g_CLK3_DIVIDE                            : integer := 4;
   g_CLK3_PHASE                             : real    := 0.0;
   g_SYS_CLOCK_FREQ                         : integer := 100000000;
+  -- aux PLL parameters
+  g_AUX_CLKIN_PERIOD                       : real    := 14.400;
+  g_AUX_DIVCLK_DIVIDE                      : integer := 1;
+  g_AUX_CLKBOUT_MULT_F                     : integer := 18;
+  g_AUX_CLK_DIVIDE                         : integer := 10;
+  g_AUX_CLK_PHASE                          : real    := 0.0;
+  g_AUX_CLK_RAW_DIVIDE                     : integer := 18;
+  g_AUX_CLK_RAW_PHASE                      : real    := 0.0;
   -- AFC Si57x parameters
   g_AFC_SI57x_I2C_FREQ                     : integer := 400000;
   -- Whether or not to initialize oscilator with the specified values
@@ -803,22 +811,21 @@ begin
      -- Auxiliary clock
     cmp_aux_sys_pll_inst : sys_pll
     generic map (
-      -- RF*5/36 ~ 69.44 MHz input clock ~ 14.4 ns
-      g_clkin_period                           => 14.400,
-      g_divclk_divide                          => 1,
-      g_clkbout_mult_f                         => 18,
+      g_clkin_period                           => g_AUX_CLKIN_PERIOD,
+      g_divclk_divide                          => g_AUX_DIVCLK_DIVIDE,
+      g_clkbout_mult_f                         => g_AUX_CLKBOUT_MULT_F,
 
-      -- 125 MHz output clock
-      g_clk0_divide_f                          => 10,
-      -- 125 MHz output clock
-      g_clk1_divide                            => 18
+      g_clk0_divide_f                          => g_AUX_CLK_DIVIDE,
+      g_clk0_phase                             => g_AUX_CLK_PHASE,
+
+      g_clk1_divide                            => g_AUX_CLK_RAW_DIVIDE,
+      g_clk1_phase                             => g_AUX_CLK_RAW_PHASE
     )
     port map (
       rst_i                                    => '0',
       clk_i                                    => aux_clk_gen_bufg,
-      --clk_i                                    => aux_clk_gen,
-      clk0_o                                   => clk_aux,              -- 125MHz locked clock
-      clk1_o                                   => clk_aux_raw,          -- ~64.44 MHz
+      clk0_o                                   => clk_aux,
+      clk1_o                                   => clk_aux_raw,
       clk2_o                                   => open,
       locked_o                                 => clk_aux_locked        -- '1' when the PLL has locked
     );
