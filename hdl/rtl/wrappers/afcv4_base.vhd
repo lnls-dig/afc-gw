@@ -46,6 +46,14 @@ generic (
   g_CLK3_DIVIDE                            : integer := 4;
   g_CLK3_PHASE                             : real    := 0.0;
   g_SYS_CLOCK_FREQ                         : integer := 100000000;
+  -- aux PLL parameters
+  g_AUX_CLKIN_PERIOD                       : real    := 14.400;
+  g_AUX_DIVCLK_DIVIDE                      : integer := 1;
+  g_AUX_CLKBOUT_MULT_F                     : integer := 18;
+  g_AUX_CLK_DIVIDE                         : integer := 10;
+  g_AUX_CLK_PHASE                          : real    := 0.0;
+  g_AUX_CLK_RAW_DIVIDE                     : integer := 18;
+  g_AUX_CLK_RAW_PHASE                      : real    := 0.0;
   -- AFC Si57x parameters
   g_AFC_SI57x_I2C_FREQ                     : integer := 400000;
   -- Whether or not to initialize oscilator with the specified values
@@ -292,6 +300,14 @@ begin
       g_CLK3_DIVIDE                            => g_CLK3_DIVIDE,
       g_CLK3_PHASE                             => g_CLK3_PHASE,
       g_SYS_CLOCK_FREQ                         => g_SYS_CLOCK_FREQ,
+      -- aux PLL parameters
+      g_AUX_CLKIN_PERIOD                       => g_AUX_CLKIN_PERIOD,
+      g_AUX_DIVCLK_DIVIDE                      => g_AUX_DIVCLK_DIVIDE,
+      g_AUX_CLKBOUT_MULT_F                     => g_AUX_CLKBOUT_MULT_F,
+      g_AUX_CLK_DIVIDE                         => g_AUX_CLK_DIVIDE,
+      g_AUX_CLK_PHASE                          => g_AUX_CLK_PHASE,
+      g_AUX_CLK_RAW_DIVIDE                     => g_AUX_CLK_RAW_DIVIDE,
+      g_AUX_CLK_RAW_PHASE                      => g_AUX_CLK_RAW_PHASE,
       -- AFC Si57x parameters
       g_AFC_SI57x_I2C_FREQ                     => g_AFC_SI57x_I2C_FREQ,
       -- Whether or not to initialize oscilator with the specified values
