@@ -30,15 +30,21 @@ import argparse
 argp = argparse.ArgumentParser(description="Calculate parameters for Silabs Si57x oscilator or the output frequency from the parameters provided.")
 argp.add_argument("--fxtal", type=float, help="Internal crystal frequency in hertz [defaut = 114.285e6]", default=114.285e6)
 
-group_calc_fout = argp.add_argument_group(title="Calculate FOUT from registers")
+group_calc_fout = argp.add_argument_group(title="Calculate FOUT or FXTAL from registers")
 group_calc_fout.add_argument("--rfreq", type=str, help="Raw RFREQ register value in hexadecimal")
 group_calc_fout.add_argument("--hsdiv", type=str, help="Raw HSDIV register value in hexadecimal")
 group_calc_fout.add_argument("--n1", type=str, help="Raw N1 register value in hexadecimal")
+group_calc_fout.add_argument("--fstart", type=float, help="Startup frequency in hertz. If set, it will calculate the internal crystal frequency FXTAL instead of FOUT")
 
 group_calc_params = argp.add_argument_group(title="Calculate registers from FOUT")
 group_calc_params.add_argument("--fout", type=float, help="Output frequency in hertz")
 
 args = argp.parse_args()
+
+def si570_calc_fxtal(rfreq, hsdiv, n1, fstart):
+    if (n1 > 1 and (n1 % 2) == 1):
+        n1 = n1 + 1
+    return (fstart * hsdiv * n1) / (rfreq * 2**-28)
 
 def si570_calc_fout(rfreq, hsdiv, n1, fxtal):
     if (n1 > 1 and (n1 % 2) == 1):
@@ -75,8 +81,12 @@ if args.fout == None:
         rfreq = int(args.rfreq, 16)
         hsdiv = int(args.hsdiv, 16)
         n1 = int(args.n1, 16)
-        fout = si570_calc_fout(rfreq, hsdiv + 4, n1, args.fxtal)
-        print("FOUT = {} Hz".format(fout))
+        if args.fstart == None:
+            fout = si570_calc_fout(rfreq, hsdiv + 4, n1, args.fxtal)
+            print("FOUT = {} Hz".format(fout))
+        else:
+            fxtal = si570_calc_fxtal(rfreq, hsdiv + 4, n1, args.fstart)
+            print("FXTAL = {} Hz".format(fxtal))
 else:
     if args.rfreq != None or args.hsdiv != None or args.n1 != None:
         print("Invalid arguments: if --fout is specified, --rfreq, --hsdiv and --n1 can not be used", file=sys.stderr)
