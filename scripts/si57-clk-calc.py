@@ -42,11 +42,13 @@ group_calc_params.add_argument("--fout", type=float, help="Output frequency in h
 args = argp.parse_args()
 
 def si570_calc_fxtal(rfreq, hsdiv, n1, fstart):
+    n1 = n1 + 1
     if (n1 > 1 and (n1 % 2) == 1):
         n1 = n1 + 1
     return (fstart * hsdiv * n1) / (rfreq * 2**-28)
 
 def si570_calc_fout(rfreq, hsdiv, n1, fxtal):
+    n1 = n1 + 1
     if (n1 > 1 and (n1 % 2) == 1):
         n1 = n1 + 1
     return (fxtal * rfreq * 2**-28) / (hsdiv * n1)
@@ -71,7 +73,7 @@ def si570_calc_divs(fout, fxtal):
                     rfreq_best = rfreq
                     hsdiv_best = hsdiv
                     n1_best = n1
-    return (rfreq_best, hsdiv_best, n1_best)
+    return (rfreq_best, hsdiv_best, n1_best - 1)
 
 if args.fout == None:
     if args.rfreq == None or args.hsdiv == None or args.n1 == None:
