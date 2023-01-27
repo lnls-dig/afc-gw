@@ -49,10 +49,9 @@ package afc_base_wrappers_pkg is
     g_AFC_SI57x_INIT_RFREQ_VALUE             : std_logic_vector(37 downto 0) := "00" & x"3017a66ad";
     g_AFC_SI57x_INIT_N1_VALUE                : std_logic_vector(6 downto 0) := "0000011";
     g_AFC_SI57x_INIT_HS_VALUE                : std_logic_vector(2 downto 0) := "111";
-    --  If true, instantiate a VIC/UART/DIAG/SPI.
+    --  If true, instantiate a VIC/UART/SPI.
     g_WITH_VIC                               : boolean := true;
     g_WITH_UART_MASTER                       : boolean := true;
-    g_WITH_DIAG                              : boolean := true;
     g_WITH_TRIGGER                           : boolean := true;
     g_WITH_SPI                               : boolean := true;
     g_WITH_AFC_SI57x                         : boolean := true;
@@ -298,10 +297,9 @@ package afc_base_wrappers_pkg is
     g_AFC_SI57x_INIT_RFREQ_VALUE             : std_logic_vector(37 downto 0) := "00" & x"3017a66ad";
     g_AFC_SI57x_INIT_N1_VALUE                : std_logic_vector(6 downto 0) := "0000011";
     g_AFC_SI57x_INIT_HS_VALUE                : std_logic_vector(2 downto 0) := "111";
-    --  If true, instantiate a VIC/UART/DIAG/SPI.
+    --  If true, instantiate a VIC/UART/SPI.
     g_WITH_VIC                               : boolean := true;
     g_WITH_UART_MASTER                       : boolean := true;
-    g_WITH_DIAG                              : boolean := true;
     g_WITH_TRIGGER                           : boolean := true;
     g_WITH_SPI                               : boolean := true;
     g_WITH_AFC_SI57x                         : boolean := true;
@@ -548,10 +546,9 @@ package afc_base_wrappers_pkg is
     g_AFC_SI57x_INIT_RFREQ_VALUE               : std_logic_vector(37 downto 0) := "00" & x"3017a66ad";
     g_AFC_SI57x_INIT_N1_VALUE                  : std_logic_vector(6 downto 0) := "0000011";
     g_AFC_SI57x_INIT_HS_VALUE                  : std_logic_vector(2 downto 0) := "111";
-    --  If true, instantiate a VIC/UART/DIAG/SPI.
+    --  If true, instantiate a VIC/UART/SPI.
     g_WITH_VIC                                 : boolean := true;
     g_WITH_UART_MASTER                         : boolean := true;
-    g_WITH_DIAG                                : boolean := true;
     g_WITH_TRIGGER                             : boolean := true;
     g_WITH_SPI                                 : boolean := false;
     g_WITH_AFC_SI57x                           : boolean := true;
@@ -795,10 +792,9 @@ package afc_base_wrappers_pkg is
     g_AFC_SI57x_INIT_RFREQ_VALUE               : std_logic_vector(37 downto 0) := "00" & x"3017a66ad";
     g_AFC_SI57x_INIT_N1_VALUE                  : std_logic_vector(6 downto 0) := "0000011";
     g_AFC_SI57x_INIT_HS_VALUE                  : std_logic_vector(2 downto 0) := "111";
-    --  If true, instantiate a VIC/UART/DIAG/SPI.
+    --  If true, instantiate a VIC/UART/SPI.
     g_WITH_VIC                                 : boolean := true;
     g_WITH_UART_MASTER                         : boolean := true;
-    g_WITH_DIAG                                : boolean := true;
     g_WITH_TRIGGER                             : boolean := true;
     g_WITH_SPI                                 : boolean := false;
     g_WITH_AFC_SI57x                           : boolean := true;
