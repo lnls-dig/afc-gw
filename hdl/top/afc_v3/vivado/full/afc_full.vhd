@@ -206,10 +206,9 @@ begin
 
   cmp_afc_base : afc_base
     generic map (
-      --  If true, instantiate a VIC/UART/DIAG/SPI.
+      --  If true, instantiate a VIC/UART/SPI.
       g_WITH_VIC                               => true,
       g_WITH_UART_MASTER                       => true,
-      g_WITH_DIAG                              => true,
       g_WITH_TRIGGER                           => true,
       g_WITH_SPI                               => false,
       g_WITH_BOARD_I2C                         => true,

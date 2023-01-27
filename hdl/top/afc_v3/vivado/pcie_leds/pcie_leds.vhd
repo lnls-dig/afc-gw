@@ -81,6 +81,13 @@ port(
   pcie_clk_p_i                             : in std_logic;
   pcie_clk_n_i                             : in std_logic;
 
+  -- Si57x oscillator
+  afc_si57x_scl_b                            : inout std_logic;
+  afc_si57x_sda_b                            : inout std_logic;
+
+  -- Si57x oscillator output enable
+  afc_si57x_oe_o                             : out   std_logic;
+
   -----------------------------------------
   -- User LEDs
   -----------------------------------------
@@ -138,17 +145,29 @@ architecture rtl of pcie_leds is
   signal app_wb_out                        : t_wishbone_master_out;
   signal app_wb_in                         : t_wishbone_master_in := c_DUMMY_WB_MASTER_IN;
 
+  constant c_AFC_SI57x_I2C_FREQ              : natural := 400000;
+  constant c_AFC_SI57x_INIT_OSC              : boolean := true;
+  constant c_AFC_SI57x_INIT_RFREQ_VALUE      : std_logic_vector(37 downto 0) := "00" & x"309c85ab2";
+  constant c_AFC_SI57x_INIT_N1_VALUE         : std_logic_vector(6 downto 0) := "0010011";
+  constant c_AFC_SI57x_INIT_HS_VALUE         : std_logic_vector(2 downto 0) := "000";
+
 begin
 
   cmp_afc_base : afc_base
     generic map (
-      --  If true, instantiate a VIC/UART/DIAG/SPI.
+      --  If true, instantiate a VIC/UART/SPI.
       g_WITH_VIC                               => false,
       g_WITH_UART_MASTER                       => false,
-      g_WITH_DIAG                              => false,
       g_WITH_TRIGGER                           => false,
       g_WITH_SPI                               => false,
       g_WITH_BOARD_I2C                         => false,
+      g_AFC_SI57x_I2C_FREQ                     => c_AFC_SI57x_I2C_FREQ,
+      -- Whether or not to initialize oscilator with the specified values
+      g_AFC_SI57x_INIT_OSC                     => c_AFC_SI57x_INIT_OSC,
+      -- Init Oscillator values
+      g_AFC_SI57x_INIT_RFREQ_VALUE             => c_AFC_SI57x_INIT_RFREQ_VALUE,
+      g_AFC_SI57x_INIT_N1_VALUE                => c_AFC_SI57x_INIT_N1_VALUE,
+      g_AFC_SI57x_INIT_HS_VALUE                => c_AFC_SI57x_INIT_HS_VALUE,
       -- Auxiliary clock used to sync incoming triggers in the trigger module.
       -- If false, trigger will be synch'ed with clk_sys
       g_WITH_AUX_CLK                           => false,
@@ -206,6 +225,16 @@ begin
       -- PCI clock and reset signals
       pcie_clk_p_i                             => pcie_clk_p_i,
       pcie_clk_n_i                             => pcie_clk_n_i,
+
+      ---------------------------------------------------------------------------
+      -- AFC I2C.
+      ---------------------------------------------------------------------------
+      -- Si57x oscillator
+      afc_si57x_scl_b                          => afc_si57x_scl_b,
+      afc_si57x_sda_b                          => afc_si57x_sda_b,
+
+      -- Si57x oscillator output enable
+      afc_si57x_oe_o                           => afc_si57x_oe_o,
 
       ---------------------------------------------------------------------------
       -- User LEDs

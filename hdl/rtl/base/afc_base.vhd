@@ -74,10 +74,9 @@ generic (
   g_AFC_SI57x_INIT_RFREQ_VALUE             : std_logic_vector(37 downto 0) := "00" & x"3017a66ad";
   g_AFC_SI57x_INIT_N1_VALUE                : std_logic_vector(6 downto 0) := "0000011";
   g_AFC_SI57x_INIT_HS_VALUE                : std_logic_vector(2 downto 0) := "111";
-  --  If true, instantiate a VIC/UART/DIAG/SPI.
+  --  If true, instantiate a VIC/UART/SPI.
   g_WITH_VIC                               : boolean := true;
   g_WITH_UART_MASTER                       : boolean := true;
-  g_WITH_DIAG                              : boolean := true;
   g_WITH_TRIGGER                           : boolean := true;
   g_WITH_SPI                               : boolean := true;
   g_WITH_AFC_SI57x                         : boolean := true;
@@ -357,7 +356,7 @@ architecture top of afc_base is
   -----------------------------------------------------------------------------
 
   -- Number of slaves
-  constant c_dev_slaves                      : natural := 7;
+  constant c_dev_slaves                      : natural := 6;
 
   -- Slaves indexes
   constant c_dev_slv_afc_base_id             : natural := 0;
@@ -365,8 +364,7 @@ architecture top of afc_base is
   constant c_dev_slv_board_i2c_id            : natural := 2;
   constant c_dev_slv_vic_id                  : natural := 3;
   constant c_dev_slv_spi_id                  : natural := 4;
-  constant c_dev_slv_afc_diag_id             : natural := 5;
-  constant c_dev_slv_trig_iface_id           : natural := 6;
+  constant c_dev_slv_trig_iface_id           : natural := 5;
 
   -- General peripherals layout. UART, LEDs (GPIO), Buttons (GPIO) and Tics counter
   constant c_periph_bridge_sdb : t_sdb_bridge := f_xwb_bridge_manual_sdb(x"00000FFF", x"00000400");
@@ -379,7 +377,6 @@ architecture top of afc_base is
      c_dev_slv_board_i2c_id        => f_sdb_auto_device(c_xwb_i2c_master_sdb,       g_WITH_BOARD_I2C),   -- Board I2C
      c_dev_slv_vic_id              => f_sdb_auto_device(c_xwb_vic_sdb,              g_WITH_VIC),         -- VIC
      c_dev_slv_spi_id              => f_sdb_auto_device(c_xwb_spi_sdb,              g_WITH_SPI),         -- Flash SPI
-     c_dev_slv_afc_diag_id         => f_sdb_auto_device(c_xwb_afc_diag_sdb,         g_WITH_DIAG),        -- AFC Diagnostics
      c_dev_slv_trig_iface_id       => f_sdb_auto_device(c_xwb_trigger_iface_sdb,    g_WITH_TRIGGER)      -- Trigger Interface
     );
 
@@ -1143,10 +1140,6 @@ begin
             metadata_data(0) <= '1';
           end if;
 
-          if g_WITH_DIAG then
-            metadata_data(1) <= '1';
-          end if;
-
           if g_WITH_TRIGGER then
             metadata_data(2) <= '1';
           end if;
@@ -1319,48 +1312,6 @@ begin
   gen_without_spi: if not g_WITH_SPI generate
 
     cbar_dev_bus_master_in(c_dev_slv_spi_id) <= c_DUMMY_WB_MASTER_IN;
-
-  end generate;
-
-  -----------------------------------------------------------------------------
-  -- AFC Diagnostics
-  -----------------------------------------------------------------------------
-
-  gen_afc_diag : if g_WITH_DIAG generate
-
-    cmp_xwb_afc_diag : xwb_afc_diag
-    generic map(
-      g_interface_mode                          => PIPELINED,
-      g_address_granularity                     => BYTE
-    )
-    port map(
-      sys_clk_i                                 => clk_sys,
-      sys_rst_n_i                               => clk_sys_rstn,
-
-      -- Fast SPI clock. Same as Wishbone clock.
-      spi_clk_i                                 => clk_sys,
-
-      -----------------------------
-      -- Wishbone Control Interface signals
-      -----------------------------
-      wb_slv_i                                  => cbar_dev_bus_master_out(c_dev_slv_afc_diag_id),
-      wb_slv_o                                  => cbar_dev_bus_master_in(c_dev_slv_afc_diag_id),
-
-      -----------------------------
-      -- SPI interface
-      -----------------------------
-
-      spi_cs                                    => diag_spi_cs_i,
-      spi_si                                    => diag_spi_si_i,
-      spi_so                                    => diag_spi_so_o,
-      spi_clk                                   => diag_spi_clk_i
-    );
-
-  end generate;
-
-  gen_without_afc_diag : if not g_WITH_DIAG generate
-
-    cbar_dev_bus_master_in(c_dev_slv_afc_diag_id) <= c_DUMMY_WB_MASTER_IN;
 
   end generate;
 
