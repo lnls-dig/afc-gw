@@ -70,6 +70,7 @@ def si570_calc_divs(fout, fxtal):
             else:
                 freq_err_now = abs(fout - (fdco / (hsdiv * n1)))
                 if (freq_err_now < freq_err_best):
+                    freq_err_best = freq_err_now
                     rfreq_best = rfreq
                     hsdiv_best = hsdiv
                     n1_best = n1
