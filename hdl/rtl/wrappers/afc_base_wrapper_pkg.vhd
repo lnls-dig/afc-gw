@@ -21,6 +21,9 @@ package afc_base_wrappers_pkg is
 
   component afcv3_base
   generic (
+    -- Bench mode, prevents PCIe reseting devices sharing the
+    -- rst_sys_n_o reset signal
+    g_BENCH_MODE                             : boolean := false;
     -- system PLL parameters
     g_DIVCLK_DIVIDE                          : integer := 5;
     g_CLKBOUT_MULT_F                         : integer := 48;
@@ -269,6 +272,9 @@ package afc_base_wrappers_pkg is
 
   component afcv4_base
   generic (
+    -- Bench mode, prevents PCIe reseting devices sharing the
+    -- rst_sys_n_o reset signal
+    g_BENCH_MODE                             : boolean := false;
     -- system PLL parameters
     g_DIVCLK_DIVIDE                          : integer := 5;
     g_CLKBOUT_MULT_F                         : integer := 48;
@@ -518,6 +524,9 @@ package afc_base_wrappers_pkg is
 
   component afcv3_base_acq
   generic (
+    -- Bench mode, prevents PCIe reseting devices sharing the
+    -- rst_sys_n_o reset signal
+    g_BENCH_MODE                             : boolean := false;
     -- system PLL parameters
     g_DIVCLK_DIVIDE                            : integer := 5;
     g_CLKBOUT_MULT_F                           : integer := 48;
@@ -764,6 +773,9 @@ package afc_base_wrappers_pkg is
 
   component afcv4_base_acq
   generic (
+    -- Bench mode, prevents PCIe reseting devices sharing the
+    -- rst_sys_n_o reset signal
+    g_BENCH_MODE                               : boolean := false;
     -- system PLL parameters
     g_DIVCLK_DIVIDE                            : integer := 5;
     g_CLKBOUT_MULT_F                           : integer := 48;

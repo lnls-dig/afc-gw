@@ -29,6 +29,9 @@ package afc_base_pkg is
   --------------------------------------------------------------------
   component afc_base
   generic (
+    -- Bench mode, prevents PCIe reseting devices sharing the
+    -- rst_sys_n_o reset signal
+    g_BENCH_MODE                             : boolean := false;
     -- system PLL parameters
     g_DIVCLK_DIVIDE                          : integer := 5;
     g_CLKBOUT_MULT_F                         : integer := 48;
