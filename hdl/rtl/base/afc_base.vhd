@@ -46,6 +46,9 @@ use work.afc_base_pkg.all;
 
 entity afc_base is
 generic (
+  -- Bench mode, prevents PCIe reseting devices sharing the
+  -- rst_sys_n_o reset signal
+  g_BENCH_MODE                             : boolean := false;
   -- system PLL parameters
   g_DIVCLK_DIVIDE                          : integer := 5;
   g_CLKBOUT_MULT_F                         : integer := 48;
@@ -719,7 +722,7 @@ begin
   clk_sys_pcie_rst                           <= not clk_sys_pcie_rstn;
   -- Reset for all other modules
   clk_sys_rstn_raw                           <= reset_rstn(c_clk_sys_id) and rst_button_sys_n and
-                                                   uart_rstn and wb_ma_pcie_rstn_sync;
+                                                   uart_rstn and '1' when g_BENCH_MODE else wb_ma_pcie_rstn_sync;
   clk_sys_rst_raw                            <= not clk_sys_rstn_raw;
 
   -- Additional stage for clk_sys reset as we AND other resets that might fail

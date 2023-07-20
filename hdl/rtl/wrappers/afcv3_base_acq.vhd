@@ -36,6 +36,9 @@ use work.afc_base_acq_pkg.all;
 
 entity afcv3_base_acq is
 generic (
+  -- Bench mode, prevents PCIe reseting devices sharing the
+  -- rst_sys_n_o reset signal
+  g_BENCH_MODE                               : boolean := false;
   -- system PLL parameters
   g_DIVCLK_DIVIDE                            : integer := 5;
   g_CLKBOUT_MULT_F                           : integer := 48;
@@ -286,6 +289,7 @@ begin
 
   cmp_afc_base_acq : afc_base_acq
     generic map (
+      g_BENCH_MODE                             => g_BENCH_MODE,
       g_DIVCLK_DIVIDE                          => g_DIVCLK_DIVIDE,
       g_CLKBOUT_MULT_F                         => g_CLKBOUT_MULT_F,
       g_CLK0_DIVIDE_F                          => g_CLK0_DIVIDE_F,

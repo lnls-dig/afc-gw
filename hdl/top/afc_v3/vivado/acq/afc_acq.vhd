@@ -298,6 +298,7 @@ begin
 
   cmp_afc_base_acq : afc_base_acq
     generic map (
+      g_BENCH_MODE                             => false,
       --  If true, instantiate a VIC/UART/SPI.
       g_WITH_VIC                               => true,
       g_WITH_UART_MASTER                       => true,
