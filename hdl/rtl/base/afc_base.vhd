@@ -61,6 +61,7 @@ generic (
   g_CLK3_DIVIDE                            : integer := 4;
   g_CLK3_PHASE                             : real    := 0.0;
   g_SYS_CLOCK_FREQ                         : integer := 100000000;
+  g_UART_MASTER_BAUD                       : integer := 115200;
   -- aux PLL parameters
   g_AUX_CLKIN_PERIOD                       : real    := 14.400;
   g_AUX_DIVCLK_DIVIDE                      : integer := 1;
@@ -316,13 +317,13 @@ architecture top of afc_base is
   constant c_top_masters                     : natural := 2;
   -- Master indexes
   constant c_top_ma_pcie_id                  : natural := 0;
-  constant c_top_ma_rs232_syscon_id          : natural := 1;
+  constant c_top_ma_wb_master_uart_id        : natural := 1;
 
   -- Master layout
   constant c_top_ma_layout_raw : t_sdb_record_array(c_top_masters-1 downto 0) :=
    (
      c_top_ma_pcie_id               => f_sdb_auto_msi(c_null_msi,    false),   -- no MSIs for PCIe
-     c_top_ma_rs232_syscon_id       => f_sdb_auto_msi(c_null_msi,    false)    -- no MSIs for UART
+     c_top_ma_wb_master_uart_id     => f_sdb_auto_msi(c_null_msi,    false)    -- no MSIs for UART
    );
 
   constant c_top_ma_layout                   : t_sdb_record_array := f_sdb_auto_layout(c_top_ma_layout_raw);
@@ -956,30 +957,22 @@ begin
   -----------------------------------------------------------------------------
   -- RS232 Core
   -----------------------------------------------------------------------------
-  cbar_top_msi_master_in(c_top_ma_rs232_syscon_id)   <= cc_DUMMY_MASTER_IN; -- UART does not accept MSI
+  cbar_top_msi_master_in(c_top_ma_wb_master_uart_id)   <= cc_DUMMY_MASTER_IN; -- UART does not accept MSI
 
   gen_with_uart_master : if g_WITH_UART_MASTER generate
 
-    cmp_xwb_rs232_syscon : xwb_rs232_syscon
+    cmp_xwb_master_uart: xwb_master_uart
     generic map (
-      g_ma_interface_mode                    => PIPELINED,
-      g_ma_address_granularity               => BYTE
+      g_INTERFACE_MODE => PIPELINED
     )
-    port map(
-      -- WISHBONE common
-      wb_clk_i                               => clk_sys,
-      wb_rstn_i                              => clk_sys_rstn,
-
-      -- External ports
-      rs232_rxd_i                            => uart_rxd_i,
-      rs232_txd_o                            => uart_txd_o,
-
-      -- Reset to FPGA logic
-      rstn_o                                 => uart_rstn,
-
-      -- WISHBONE master
-      wb_master_i                            => cbar_top_bus_slave_out(c_top_ma_rs232_syscon_id),
-      wb_master_o                            => cbar_top_bus_slave_in(c_top_ma_rs232_syscon_id)
+    port map (
+      clk_i            => clk_sys,
+      rst_n_i          => clk_sys_rstn,
+      clk_div_i        => to_unsigned(g_SYS_CLOCK_FREQ/g_UART_MASTER_BAUD - 1, 16),
+      tx_o             => uart_txd_o,
+      rx_i             => uart_rxd_i,
+      wb_master_i      => cbar_top_bus_slave_out(c_top_ma_wb_master_uart_id),
+      wb_master_o      => cbar_top_bus_slave_in(c_top_ma_wb_master_uart_id)
     );
 
   end generate;
@@ -988,7 +981,7 @@ begin
 
     uart_txd_o <= '0';
     uart_rstn <= '1';
-    cbar_top_bus_slave_in(c_top_ma_rs232_syscon_id) <= c_DUMMY_WB_SLAVE_IN;
+    cbar_top_bus_slave_in(c_top_ma_wb_master_uart_id) <= c_DUMMY_WB_SLAVE_IN;
 
   end generate;
 
