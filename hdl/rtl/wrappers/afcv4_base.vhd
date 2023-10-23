@@ -49,6 +49,7 @@ generic (
   g_CLK3_DIVIDE                            : integer := 4;
   g_CLK3_PHASE                             : real    := 0.0;
   g_SYS_CLOCK_FREQ                         : integer := 100000000;
+  g_UART_MASTER_BAUD                       : integer := 115200;
   -- aux PLL parameters
   g_AUX_CLKIN_PERIOD                       : real    := 14.400;
   g_AUX_DIVCLK_DIVIDE                      : integer := 1;
@@ -303,6 +304,7 @@ begin
       g_CLK3_DIVIDE                            => g_CLK3_DIVIDE,
       g_CLK3_PHASE                             => g_CLK3_PHASE,
       g_SYS_CLOCK_FREQ                         => g_SYS_CLOCK_FREQ,
+      g_UART_MASTER_BAUD                       => g_UART_MASTER_BAUD,
       -- aux PLL parameters
       g_AUX_CLKIN_PERIOD                       => g_AUX_CLKIN_PERIOD,
       g_AUX_DIVCLK_DIVIDE                      => g_AUX_DIVCLK_DIVIDE,

@@ -210,6 +210,7 @@ begin
       --  If true, instantiate a VIC/UART/SPI.
       g_WITH_VIC                               => true,
       g_WITH_UART_MASTER                       => true,
+      g_UART_MASTER_BAUD                       => 115200,
       g_WITH_TRIGGER                           => true,
       g_WITH_SPI                               => false,
       g_WITH_BOARD_I2C                         => true,
