@@ -36,6 +36,7 @@ package afc_base_wrappers_pkg is
     g_CLK3_DIVIDE                            : integer := 4;
     g_CLK3_PHASE                             : real    := 0.0;
     g_SYS_CLOCK_FREQ                         : integer := 100000000;
+    g_UART_MASTER_BAUD                       : integer := 115200;
     -- aux PLL parameters
     g_AUX_CLKIN_PERIOD                       : real    := 14.400;
     g_AUX_DIVCLK_DIVIDE                      : integer := 1;
@@ -287,6 +288,7 @@ package afc_base_wrappers_pkg is
     g_CLK3_DIVIDE                            : integer := 4;
     g_CLK3_PHASE                             : real    := 0.0;
     g_SYS_CLOCK_FREQ                         : integer := 100000000;
+    g_UART_MASTER_BAUD                       : integer := 115200;
     -- aux PLL parameters
     g_AUX_CLKIN_PERIOD                       : real    := 14.400;
     g_AUX_DIVCLK_DIVIDE                      : integer := 1;
@@ -539,6 +541,7 @@ package afc_base_wrappers_pkg is
     g_CLK3_DIVIDE                              : integer := 4;
     g_CLK3_PHASE                               : real    := 0.0;
     g_SYS_CLOCK_FREQ                           : integer := 100000000;
+    g_UART_MASTER_BAUD                         : integer := 115200;
     -- aux PLL parameters
     g_AUX_CLKIN_PERIOD                       : real    := 14.400;
     g_AUX_DIVCLK_DIVIDE                      : integer := 1;
@@ -788,6 +791,7 @@ package afc_base_wrappers_pkg is
     g_CLK3_DIVIDE                              : integer := 4;
     g_CLK3_PHASE                               : real    := 0.0;
     g_SYS_CLOCK_FREQ                           : integer := 100000000;
+    g_UART_MASTER_BAUD                         : integer := 115200;
     -- aux PLL parameters
     g_AUX_CLKIN_PERIOD                         : real    := 14.400;
     g_AUX_DIVCLK_DIVIDE                        : integer := 1;
