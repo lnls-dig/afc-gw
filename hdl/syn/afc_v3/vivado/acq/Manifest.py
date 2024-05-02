@@ -30,10 +30,15 @@ board = "afc"
 # For appending  the afc_acq.xdc to synthesis
 afc_base_xdc = ['acq']
 
+files = []
+
+# TCL commands file
+files.append("commands.tcl")
+
 import os
 import sys
 if os.path.isfile("synthesis_descriptor_pkg.vhd"):
-    files = ["synthesis_descriptor_pkg.vhd"];
+    files.append("synthesis_descriptor_pkg.vhd");
 else:
     sys.exit("Generate the SDB descriptor before using HDLMake (./build_synthesis_sdb.sh)")
 
