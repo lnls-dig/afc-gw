@@ -63,7 +63,7 @@ def si570_calc_divs(fout, fxtal):
         n1_divs = [1]
         n1_divs.extend(range(2, 129, 2))
         for n1 in n1_divs:
-            rfreq = int((fout * hsdiv * n1 * 2**28) / fxtal)
+            rfreq = round((fout * hsdiv * n1 * 2**28) / fxtal)
             fdco = (rfreq * fxtal) * 2**-28
             if(fdco < 4.85e9 or fdco > 5.67e9):
                 continue
